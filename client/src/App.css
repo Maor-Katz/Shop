@@ -1,0 +1,228 @@
+.App {
+  text-align: center;
+}
+
+.loginPage{
+  display: flex;
+  height: 100vh;
+}
+.loginPanel{
+  flex: 1;
+}
+.aboutPage{
+  flex: 1;
+  background-image: url(https://images.unsplash.com/photo-1582020086775-1c3fc831a1c7?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max);
+  
+  background-size: cover;
+}
+.aboutTitle{
+  color: white;
+}
+.storeInfoPage{
+  background-color: bisque;
+  flex: 1;
+}
+.registerPage{
+  flex: 1;
+  overflow: auto;
+}
+.paddingClass{
+  padding: 10px;
+}
+.errMsg{
+  display:inline-block;
+  padding:5px 6px 8px 6px;
+  border-radius: 6px;
+  color:white;
+  background-color:red;
+  position: relative;
+}
+.chat:after {
+  content: "";
+  position:absolute;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 12px solid red;
+  transform:rotate(-45deg);
+  right: -13px; 
+  top: 2px;
+}
+.storeParagraph{
+  display:inline-block;
+  padding:5px 6px 8px 6px;
+  margin: 5px;
+  border-radius: 6px;
+  color:black;
+  background-color: bisque;
+  position: relative;
+}
+.storeInfoTitle{
+    padding: 10px;
+    background-image: url('https://ak5.picdn.net/shutterstock/videos/6584225/thumb/1.jpg');
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 40px;
+    font-family: Titillium Web,sans-serif;
+    font-style: italic;
+    margin: 0;
+    line-height: 1;
+}
+.numOfProducts{
+  font-family: Titillium Web,sans-serif;
+  margin-top: 20px;
+}
+.logo{
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+.fontsize{
+  font-size: 50px;
+}
+.Shop{
+  background-color: bisque;
+  
+  flex: 3;
+  position: relative;
+}
+.searchProduct{
+margin: 0 auto !important;
+}
+.categoryTitles{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+.divider{
+    background-color: gray;
+    height: 1px;
+    transform: rotate(90deg);
+    display: inherit;
+    width: 22px;
+    position: absolute;
+    right: -18px;
+    top: 14px;
+  }
+.specificCategory{
+  margin-left: 15px;  
+  cursor: pointer;
+  font-weight: bold;
+}
+.categoryWrapper{
+  position: relative;
+}
+
+.size11{
+  font-size: 11px;
+}
+.productsList{
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.addButton{
+  margin: auto !important;
+}
+.qunatityModal{
+  margin: 0px 4px;
+  user-select: none;
+}
+.qunatityDiv{
+  text-align: center;
+}
+.qunatityBtn{
+  font-size: 11px;
+  background-color: lightgray;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 2px;
+}
+.closeModal{
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  cursor: pointer;
+}
+.imgModal{
+  width: 200px;
+  height: 200px;
+}
+.productModal{
+  font-weight: bold;
+  text-align: center;
+  margin: 10px;
+}
+.addBtnModal{
+  text-align: center;
+  margin-top: 5px;
+}
+.categoryAll{
+  position: relative;
+}
+.ShopPage{
+  display: flex;
+}
+.myCartPanel{
+  background-color: #8d877c;
+  overflow-y: auto;
+}
+.flex1{
+  flex: 1;
+  transition: 0.3s;
+}
+.flex0{
+  flex: 0;
+  transition: 0.3s;
+}
+.cartImg{
+  width: 50px;
+  height: 50px;
+}
+.padding{
+  padding: 2px !important;
+}
+.fontSize{
+  font-size: 13px !important;
+}
+.totalPrice{
+  text-align: center;
+  font-weight: bold;
+  font-style: italic;
+  margin-top: 15px;
+  padding: 15px;
+}
+.openCartBtn{
+  cursor: pointer !important;
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  top: 120px;
+  left: -40px;
+  background-color: #8d877c;
+  border-radius: 50%;
+}
+.shoppingIcon{
+  font-size: 18px ;
+  margin-top: 30px;
+  margin-left: 30px;
+}
+.cartAtOrder{
+  flex: 0.4;
+}
+.orderPage{
+  flex:1;
+  background-color: bisque;
+}
+.autosuggest{
+  width: 50%;
+  min-height: 10%;
+  border: 1px solid grey;
+  background-color: white;
+  margin: 0 auto;
+}
+.red{background-color: yellow;}
