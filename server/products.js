@@ -344,14 +344,13 @@ function checkFileType(file) {
 }
 
 router.post('/uploadimg', async (req, res) => {
-    const { product_name, price, categoryid } = req.body;
     const form = new formidable.IncomingForm()
     form.parse(req)
     form.on('fileBegin', (name, file) => {
         file.path = __dirname + '/public/uploads/' + file.name
     })
     form.on('file', (name, file) => {
-        console.log('uploaded file' + file.name)
+        console.log('uploaded file ' + file.name)
     })
     res.json({ ok: true, msg: 'image uploaded' })
     // const form = Formidable.IncomingForm();
@@ -403,9 +402,15 @@ router.post('/uploadimg', async (req, res) => {
     // });
 
 })
-router.post('/addproduct', (req,res)=>{
-const {name, category_id, price, files} = req.body
-res.json({})
+router.post('/addproduct', (req, res) => {
+    const { name, category_id, price, imgName } = req.body
+
+    let q = `INSERT INTO Products (product_name, category_id, price, img_url)
+VALUES ("${name}", ${category_id}, ${price}, "${imgName}")`
+    connection.query(q, (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
 })
 
 module.exports = router

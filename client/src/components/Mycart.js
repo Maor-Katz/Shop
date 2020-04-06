@@ -16,7 +16,14 @@ import NativeSelects from './matirialComponents/Myselect'
 
 class Mycart extends React.Component {
 
-    state = { productsForCart: [], totalPrice: 0, categories: [], files: {} }
+    state = {
+        productsForCart: [],
+        totalPrice: 0,
+        categories: [],
+        files: {},
+        addNewProdForm: false,
+        productToEdit: {}
+    }
     useStyles = makeStyles(theme => ({
         formControl: {
             margin: theme.spacing(1),
@@ -63,16 +70,20 @@ class Mycart extends React.Component {
     uploadHandler = async (e) => {
         this.setState({ files: e.target.files })
     }
-    
+
     addProduct = async () => {
         debugger
         const { files } = this.state;
+        if (!files[0]) { return console.error('please add image to the product') }
         const { newProduct } = this.props;
         await this.uploadImg();
         try {
             let response = await fetch(`http://localhost:1009/products/addproduct`, {
                 method: 'POST',
-                body: JSON.stringify({ newProduct, files })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ...newProduct, imgName: files[0].name })
             });
             let data = await response.json()
             console.log(data)
@@ -102,7 +113,7 @@ class Mycart extends React.Component {
     }
 
     render() {
-        const { productsForCart, totalPrice, categories } = this.state;
+        const { productsForCart, totalPrice, categories, addNewProdForm, productToEdit } = this.state;
         const { shoppingCart, isAdmin, newProduct, dispatch } = this.props;
 
         return <div className={`myCartPanel ${shoppingCart || isAdmin ? 'flex1' : 'flex0'} ${this.props.atOrder ? 'cartAtOrder' : ''}`}>
@@ -113,38 +124,53 @@ class Mycart extends React.Component {
                 ))}
                 <div className="totalPrice">Total price : {totalPrice} <FontAwesomeIcon icon={faShekelSign} className="size12" /></div>
             </div> : <div className="adminPanel">
-                    <h2 className="storeInfoTitle ">Add New Product</h2>
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        label="Name"
-                        autoFocus
-                        onChange={(e) => dispatch(addProduct('NAME_P', e.target.value))}
-                    />
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        label="Price"
-                        type="number"
-                        autoFocus
-                        onChange={(e) => dispatch(addProduct('PRICE_P', +e.target.value))}
-                    />
+                    <div>
+                        {addNewProdForm ? <h2 className="storeInfoTitle ">Add New Product</h2> : <h2 className="storeInfoTitle ">Edit</h2>}
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            label="Name"
+                            value={newProduct.name}
+                            autoFocus
+                            onChange={(e) => dispatch(addProduct('NAME_P', e.target.value))}
+                        />
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            label="Price"
+                            value={newProduct.price}
+                            type="number"
+                            autoFocus
+                            onChange={(e) => dispatch(addProduct('PRICE_P', +e.target.value))}
+                        />
 
-                    <NativeSelects categories={categories} dispatch={dispatch} newProduct={newProduct} />
+                        <NativeSelects categories={categories} dispatch={dispatch} categoryId={newProduct.category_id} />
 
-                    <UploadButtons uploadHandler={this.uploadHandler} />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        className="saveBtn"
-                        startIcon={<SaveIcon />}
-                        onClick={() => this.addProduct()}
-                    >
-                        Save
-      </Button>
+                        <UploadButtons uploadHandler={this.uploadHandler} />
+                        {addNewProdForm ? <Button
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            className="saveBtn"
+                            startIcon={<SaveIcon />}
+                            onClick={() => this.addProduct()}
+                        >
+                            Add
+      </Button> : <Button
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                className="saveBtn"
+                                startIcon={<SaveIcon />}
+                                onClick={() => this.addProduct()}
+                            >
+                                Save
+      </Button>}
+                    </div>
+
+
                 </div>}
         </div>;
     }

@@ -13,8 +13,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const useStyles = makeStyles({
   root: {
     width: 210,
-    marginRight:10,
-    marginTop:10,
+    marginRight: 10,
+    marginTop: 10,
     marginBottom: 5
   },
   media: {
@@ -22,27 +22,28 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MediaCard(props) {  
+export default function MediaCard(props) {
   const classes = useStyles();
   return (
-    <Card className={classes.root}>
+    <Card className={classes.root} >
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image={props.details.img_url}
+          image={`http://localhost:1009/uploads/${props.details.img_url}`}
           title="Contemplative Reptile"
+          onClick={()=> props.editProduct(props.details)}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-         {props.details.product_name}
+            {props.details.product_name}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            {props.details.price } <FontAwesomeIcon icon={faShekelSign} className="size11"/>
+            {props.details.price} <FontAwesomeIcon icon={faShekelSign} className="size11" />
           </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size="small" color="primary" className="addButton" onClick={()=>props.openModal(props.details)}>
+        <Button size="small" color="primary" className="addButton" onClick={() => props.openModal(props.details)}>
           Add
         </Button>
       </CardActions>

@@ -34,7 +34,7 @@ export default function NativeSelects(props) {
         </InputLabel>
         <Select
           native
-          value={props.newProduct.category}
+          value={props.categoryId}
           onChange={e => props.dispatch(addProduct('CATEGORY_ID', +e.target.value))}
           labelWidth={labelWidth}
           inputProps={{

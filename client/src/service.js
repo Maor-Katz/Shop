@@ -1,3 +1,4 @@
+
 function fieldsCounter(obj) {
     let count = 0;
     for (var f in obj) {//count how many field are filled
@@ -72,11 +73,12 @@ async function getCategories() {
     return data
 }
 
+
 module.exports = {
     fieldsCounter,
     getUserDetailsAndCartId,
     getNewCartId,
     getInvoice,
     generateVoucher,
-    getCategories
+    getCategories,
 }

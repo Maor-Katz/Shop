@@ -4,7 +4,7 @@ import MediaCard from './MediaCard'
 import { getUserDetailsAndCartId, getNewCartId, generateVoucher, getCategories } from '../service'
 import Modal from 'react-modal';
 import { faPlus, faMinus, faWindowClose, faShoppingCart, faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { shoppingCartfunc } from '../actions/actions'
+import { shoppingCartfunc, addProduct } from '../actions/actions'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from '@material-ui/core/Button';
 import { connect } from "react-redux";
@@ -109,6 +109,15 @@ class Shop extends React.Component {
         let newCartId = await getNewCartId(userDetails.Identity_num);
         this.setState({ userCartId: newCartId })
     }
+    editProduct = (details) => {
+        debugger
+        const { userDetails } = this.state
+        if (!userDetails.isAdmin) { return }// case user is not admin, dont continute with this function
+        const{dispatch} = this.props
+        dispatch(addProduct('NAME_P', details.product_name))
+        dispatch(addProduct('PRICE_P', details.price))
+        dispatch(addProduct('CATEGORY_ID', details.category_id))
+    }
 
     render() {
         const { categories, productsToShow, modalIsOpen, itemForModal, userDetails, userCartId } = this.state;
@@ -119,7 +128,7 @@ class Shop extends React.Component {
                 <div className="hiLogo">Welcome {userDetails.firstname}!</div>
                 <a className="logoutBtn" onClick={() => localStorage.clear()} href="/login">Logout</a>
             </div>
-            <img src="https://www.bls.gov/spotlight/2017/sports-and-exercise/images/cover_image.jpg" className="logo" alt="none"/>
+            <img src="https://www.bls.gov/spotlight/2017/sports-and-exercise/images/cover_image.jpg" className="logo" alt="none" />
             {!isAdmin && <div className="openCartBtn" onClick={() => dispatch(shoppingCartfunc('SHOPPING_CART', !shoppingCart))}>
                 <FontAwesomeIcon icon={faShoppingCart} className="shoppingIcon" />
                 <FontAwesomeIcon icon={shoppingCart ? faArrowLeft : faArrowRight} className="rightArrow" />
@@ -146,7 +155,7 @@ class Shop extends React.Component {
                 </div>
             </div>
             <div className="productsList">{productsToShow.map((p, index) => (
-                <MediaCard details={p} openModal={this.openModal} key={index} />
+                <MediaCard details={p} openModal={this.openModal} key={index} editProduct={this.editProduct} />
             ))}</div>
             <Modal
                 isOpen={modalIsOpen}
@@ -158,7 +167,7 @@ class Shop extends React.Component {
                     modalIsOpen: false,
                     itemForModal: { product: '', quantity: 1, img_src: '' }
                 })} />
-                <img src={itemForModal.img_src} className="imgModal" alt="none"/>
+                <img src={`http://localhost:1009/uploads/${itemForModal.img_src}`} className="imgModal" alt="none" />
                 <div className="productModal">{itemForModal.product}</div>
                 <div className="qunatityDiv">
                     <FontAwesomeIcon icon={faMinus} className="qunatityBtn" onClick={() => { itemForModal.quantity--; this.setState({ itemForModal }) }} />
