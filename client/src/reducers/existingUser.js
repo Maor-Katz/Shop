@@ -4,7 +4,6 @@ const initialState = {
 };
 
 export const existingUser = (state = initialState, action) => {
-
     switch (action.type) {
         case 'EMAIL':
             let newState2 = Object.assign({}, state, {

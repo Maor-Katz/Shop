@@ -3,6 +3,16 @@ export const newUser = (type, value) => (
         type: type,
         value: value
     })
+export const addProduct = (type, value) => (
+    {
+        type: type,
+        value: value
+    })
+export const userDetails = (type, value) => (
+    {
+        type: type,
+        value: value
+    })
 
 export const existingUser = (type, value) => (
     {
@@ -11,6 +21,11 @@ export const existingUser = (type, value) => (
     })
 
 export const shoppingCartfunc = (type, value) => (
+    {
+        type: type,
+        value: value
+    })
+export const isAdminDetails = (type, value) => (
     {
         type: type,
         value: value

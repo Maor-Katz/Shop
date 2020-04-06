@@ -66,6 +66,7 @@ CREATE TABLE Orders (
     arrival_date datetime,
     order_date datetime,
     4DigitsCard int,
+    isDone boolean default false,
     primary key(id),
     FOREIGN KEY (user_id) REFERENCES Users(Identity_num),
         

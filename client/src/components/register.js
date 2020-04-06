@@ -3,10 +3,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
@@ -128,7 +126,7 @@ function Register(props) {
             });
             const content = await rawResponse.json();
             localStorage.token = content.token;
-            localStorage.token = newUser.email;
+            localStorage.email = newUser.email;
             return 'success!'
         } catch (err) {
             return 'err'
@@ -232,17 +230,6 @@ function Register(props) {
                                     autoFocus
                                     onChange={(e) => changeHandler('ROLE', e)}
                                 />
-                                {/* <TextField
-                                    required
-                                    variant="outlined"
-                                    margin="normal"
-                                    fullWidth
-                                    id="city"
-                                    label="city"
-                                    autoComplete="email"
-                                    autoFocus
-                                    onChange={(e) => changeHandler('CITY', e)}
-                                /> */}
 
                                 <TextField
                                     variant="outlined"
@@ -277,6 +264,7 @@ function Register(props) {
                             {nextstep ? <Button
                                 disabled={!Object.values(props.newUser).every(x => x)}
                                 type="submit"
+                                href="/login"
                                 fullWidth
                                 variant="contained"
                                 color="primary"

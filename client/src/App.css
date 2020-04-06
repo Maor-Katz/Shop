@@ -55,6 +55,7 @@
   color:black;
   background-color: bisque;
   position: relative;
+  font-weight: bold;
 }
 .storeInfoTitle{
     padding: 10px;
@@ -70,6 +71,7 @@
 .numOfProducts{
   font-family: Titillium Web,sans-serif;
   margin-top: 20px;
+  font-weight: bold;
 }
 .logo{
   position: absolute;
@@ -84,10 +86,14 @@
 }
 .Shop{
   background-color: bisque;
-  
   flex: 3;
   position: relative;
 }
+.ShopPage{
+  display: flex;
+  min-height: 100vh;
+}
+
 .searchProduct{
 margin: 0 auto !important;
 }
@@ -164,9 +170,7 @@ margin: 0 auto !important;
 .categoryAll{
   position: relative;
 }
-.ShopPage{
-  display: flex;
-}
+
 .myCartPanel{
   background-color: #8d877c;
   overflow-y: auto;
@@ -217,6 +221,7 @@ margin: 0 auto !important;
 .orderPage{
   flex:1;
   background-color: bisque;
+  height: 100vh;
 }
 .autosuggest{
   width: 50%;
@@ -225,4 +230,85 @@ margin: 0 auto !important;
   background-color: white;
   margin: 0 auto;
 }
-.red{background-color: red;}
+.red{background-color: yellow;}
+.backToShop{
+  position: absolute !important;
+  right: 10px !important;
+  top: 10px !important;
+}
+.sectionTitle{
+  width: 150px;
+  display: inline-block;
+}
+.confirmBtn{
+  margin-top: 25px !important;
+}
+.lineModal{
+    width: 3px;
+    height: 100%;
+    background-color: #3f51b5;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.tooltip {
+  position: relative;
+  
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  top: -50px;
+  right: 325px;
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+.black:after{
+  border-bottom: 12px solid black;
+  transform: rotate(50deg);
+  top: 70px;
+  right: 40px;
+}
+.successMsg{
+  text-align: center;
+  font-weight: bold;
+}
+.width111{
+  width: 111px;
+}
+.voucherBtn{
+  margin: 0 auto;
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+.leftMargin{
+  margin-left: 10px;
+}
+.logoutWrapper{
+  position: absolute;
+  top : 15px;
+  left: 15px;
+  font-weight: bold;
+  color: #3f51b5
+}
+.logoutBtn{
+  cursor: pointer;
+}
+.logoutBtn:visited {
+  color: #3f51b5
+}
+.saveBtn{
+  margin-top: 30px !important;
+}

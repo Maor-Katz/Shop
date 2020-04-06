@@ -1,6 +1,7 @@
 import React from 'react';
 import SearchBox from './SearchBox'
 import MediaCard from './MediaCard'
+import { getUserDetailsAndCartId, getNewCartId, generateVoucher, getCategories } from '../service'
 import Modal from 'react-modal';
 import { faPlus, faMinus, faWindowClose, faShoppingCart, faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { shoppingCartfunc } from '../actions/actions'
@@ -8,7 +9,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from '@material-ui/core/Button';
 import { connect } from "react-redux";
 import { withRouter } from 'react-router-dom';
-
 
 class Shop extends React.Component {
 
@@ -32,18 +32,17 @@ class Shop extends React.Component {
             transform: 'translate(-50%, -50%)'
         }
     };
-    componentDidMount() {
-        this.getCategories();
-        this.getAllProducts();
-        this.getUserDetailsAndCartId();
-    }
 
-    getUserDetailsAndCartId = async () => {
-        let response = await fetch(`http://localhost:1009/auth/${localStorage.email}`);
-        let data = await response.json()
-        let response2 = await fetch(`http://localhost:1009/products/cart/${data[0].Identity_num}`);
-        let data2 = await response2.json()
-        this.setState({ userDetails: data[0], userCartId: data2[0].cart_id })
+    async componentDidMount() {
+        let categoriesNames = await getCategories();
+        this.setState({ categories: categoriesNames })
+        this.getAllProducts();
+
+        let userArayDetails = await getUserDetailsAndCartId();
+        await this.setState({ userDetails: userArayDetails[0], userCartId: userArayDetails[1] })
+        if (userArayDetails[1] === 'no-open-cart') {
+            this.openNewCart()
+        }
     }
 
     getAllProducts = async () => {
@@ -52,11 +51,6 @@ class Shop extends React.Component {
         this.setState({ productsToShow: data })
     }
 
-    getCategories = async () => {
-        let response = await fetch(`http://localhost:1009/products/category`);
-        let data = await response.json()
-        this.setState({ categories: data })
-    }
     handler = (e) => {
         this.setState({ searchBox: e.target.value })
     }
@@ -95,27 +89,45 @@ class Shop extends React.Component {
                 modalIsOpen: false,
                 itemForModal: { product: '', quantity: 1, img_src: '', product_id: 0, price: 0 }
             })
-            debugger
+
             this.props.setForRender(Math.random() * 100)//for rendering parent in order Mycart component to rerender also
         } catch (err) {
             console.log(err)
         }
     }
 
+    openNewCart = async () => {
+        const { userDetails } = this.state
+        let response = await fetch(`http://localhost:1009/products/newcart`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ Identity_num: userDetails.Identity_num, city: userDetails.city, street: userDetails.street, dateNow: "2020-01-18 13:17:17" })
+        });
+        let data = await response.json()
+        let newCartId = await getNewCartId(userDetails.Identity_num);
+        this.setState({ userCartId: newCartId })
+    }
+
     render() {
-        const { categories, productsToShow, modalIsOpen, itemForModal, searchBox } = this.state;
-        const { shoppingCart, dispatch } = this.props
+        const { categories, productsToShow, modalIsOpen, itemForModal, userDetails, userCartId } = this.state;
+        const { shoppingCart, dispatch, isAdmin } = this.props
 
         return <div className="Shop">
-            <img src="https://www.bls.gov/spotlight/2017/sports-and-exercise/images/cover_image.jpg" className="logo" />
-            <div className="openCartBtn" onClick={() => dispatch(shoppingCartfunc('SHOPPING_CART', !shoppingCart))}>
+            <div className="logoutWrapper">
+                <div className="hiLogo">Welcome {userDetails.firstname}!</div>
+                <a className="logoutBtn" onClick={() => localStorage.clear()} href="/login">Logout</a>
+            </div>
+            <img src="https://www.bls.gov/spotlight/2017/sports-and-exercise/images/cover_image.jpg" className="logo" alt="none"/>
+            {!isAdmin && <div className="openCartBtn" onClick={() => dispatch(shoppingCartfunc('SHOPPING_CART', !shoppingCart))}>
                 <FontAwesomeIcon icon={faShoppingCart} className="shoppingIcon" />
-                <FontAwesomeIcon icon={shoppingCart ? faArrowLeft : faArrowRight} className="rightArrow" /></div>
+                <FontAwesomeIcon icon={shoppingCart ? faArrowLeft : faArrowRight} className="rightArrow" />
+            </div>}
 
             <h1 className="storeInfoTitle fontsize">Megasport</h1>
-            <Button variant="contained" color="primary" href="/order"
-               >
-               Order
+            <Button variant="contained" color="primary" href="/order" onClick={() => generateVoucher(userCartId, userDetails)}>
+                Order
       </Button>
             <div ><SearchBox handler={this.handler} searchProduct={this.searchProduct} /></div>
             <div className="categoryPanel">
@@ -146,7 +158,7 @@ class Shop extends React.Component {
                     modalIsOpen: false,
                     itemForModal: { product: '', quantity: 1, img_src: '' }
                 })} />
-                <img src={itemForModal.img_src} className="imgModal" />
+                <img src={itemForModal.img_src} className="imgModal" alt="none"/>
                 <div className="productModal">{itemForModal.product}</div>
                 <div className="qunatityDiv">
                     <FontAwesomeIcon icon={faMinus} className="qunatityBtn" onClick={() => { itemForModal.quantity--; this.setState({ itemForModal }) }} />
@@ -161,7 +173,8 @@ class Shop extends React.Component {
     }
 }
 const mapStateToProps = state => ({
-    shoppingCart: state.shoppingCart.shopping_cart
+    shoppingCart: state.shoppingCart.shopping_cart,
+    isAdmin: state.isAdmin.isAdmin
 })
 
 export default connect(mapStateToProps)(withRouter(Shop))

@@ -24,16 +24,12 @@ function App() {
           <Route exact path="/login" component={() => <div className="loginPage"><Login /> <About /> <Storeinfo /></div>} />
 
           <Route path="/register" component={() => <div className="loginPage"><Register /> <About /> <Storeinfo /></div>} />
- 
+
           <Route path="/shop" component={() => <div className="ShopPage"><Mycart /> <Shop setForRender={setForRender} /></div>} />
-          <Route path="/order" component={() => <div className="ShopPage"><Mycart atOrder={true}/> <Order/></div>} />
+          <Route path="/order" component={() => <div className="ShopPage"><Mycart atOrder={true} /> <Order /></div>} />
 
           <Redirect to="/login"
-          // to={{
-          //   pathname: "/login",
-          //   // search: "?utm=your+face",
-          //   // state: { referrer: currentLocation }
-          // }}
+
           />
 
         </Switch>

@@ -49,10 +49,7 @@ const useStyles = makeStyles(theme => ({
 
 function Login(props) {
   const classes = useStyles();
-  function changeHandler(field, e) {
-    const { dispatch } = props
-    dispatch(existingUser(field, e.target.value))
-  }
+
   async function login() {
     try {
       const rawResponse = await fetch('http://localhost:1009/auth/login', {
