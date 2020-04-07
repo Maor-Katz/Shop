@@ -5,6 +5,7 @@ import { shoppingCart } from './shoppingCart';
 import { userDetails } from './userdetails';
 import { isAdmin } from './isAdmin';
 import { newProduct } from './addProduct';
+import { editProduct } from './EditProduct';
 
 
 export const allReducers = combineReducers({
@@ -13,5 +14,6 @@ export const allReducers = combineReducers({
     shoppingCart,
     userDetails,
     isAdmin,
-    newProduct
+    newProduct,
+    editProduct
 });

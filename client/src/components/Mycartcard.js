@@ -30,7 +30,7 @@ export default function Mycartcard(props) {
                     component="img"
                     alt="Contemplative Reptile"
                     height="100"
-                    image={props.details.img_url}
+                    image={`http://localhost:1009/uploads/${props.details.img_url}`}
                     title="Contemplative Reptile"
                 />
                 <CardContent className="padding">

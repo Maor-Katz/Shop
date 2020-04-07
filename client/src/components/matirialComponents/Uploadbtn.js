@@ -26,14 +26,14 @@ export default function UploadButtons(props) {
         id="contained-button-file"
         multiple
         type="file"
-      
+        onChange={(e) => props.uploadHandler(e)}
       />
       <label htmlFor="contained-button-file">
         <Button variant="contained" color="primary" component="span">
           Upload
         </Button>
       </label>
-      <input accept="image/*" className={classes.input} id="icon-button-file" type="file"   onChange={(e) => props.uploadHandler(e)}/>
+      <input accept="image/*" className={classes.input} id="icon-button-file" type="file" onChange={(e) => props.uploadHandler(e)} />
       <label htmlFor="icon-button-file">
         <IconButton color="primary" aria-label="upload picture" component="span">
           <PhotoCamera />

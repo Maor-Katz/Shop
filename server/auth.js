@@ -49,15 +49,6 @@ router.post('/check', checkUserExists, (req, res) => {
     }
 })
 
-//get all users, its for my tests
-router.get('/', (req, res) => {
-    let q = `SELECT * FROM users`
-    connection.query(q, (err, results) => {
-        if (err) throw err;
-        res.json(results);
-    });
-})
-
 //get specifc user by email
 router.get('/:email', (req, res) => {
     let q = `SELECT * FROM users

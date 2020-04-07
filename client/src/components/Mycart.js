@@ -22,7 +22,6 @@ class Mycart extends React.Component {
         categories: [],
         files: {},
         addNewProdForm: false,
-        productToEdit: {}
     }
     useStyles = makeStyles(theme => ({
         formControl: {
@@ -49,7 +48,7 @@ class Mycart extends React.Component {
     getUserTotalPrice = async () => {
         let response = await fetch(`http://localhost:1009/products/sum/${localStorage.email}`);
         let data = await response.json()
-        this.setState({ totalPrice: Object.values(data[0])[0] })
+        this.setState({ totalPrice: Object.values(data[0])[0] || 0 })
     }
 
     getUserProducts = async () => {
@@ -68,35 +67,42 @@ class Mycart extends React.Component {
     }
 
     uploadHandler = async (e) => {
-        this.setState({ files: e.target.files })
+        const { dispatch } = this.props
+        dispatch(addProduct('UPLOAD_IMAGE', e.target.files));
+        dispatch(addProduct('IMAGE_NAME', e.target.files[0].name));
     }
 
-    addProduct = async () => {
-        debugger
-        const { files } = this.state;
-        if (!files[0]) { return console.error('please add image to the product') }
-        const { newProduct } = this.props;
+    addProduct = async (addNew) => {
+        const { newProduct, productId } = this.props;
+        //if its new product i must add new image:!!!
+        if (!newProduct.files[0] && addNew) { return console.error('please add image to the product') }
         await this.uploadImg();
         try {
-            let response = await fetch(`http://localhost:1009/products/addproduct`, {
+            let response = await fetch(`http://localhost:1009/products/${addNew ? 'addproduct' : 'editproduct'}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ ...newProduct, imgName: files[0].name })
+                body: JSON.stringify({
+                    ...newProduct,
+                    imgName: newProduct.img_name,
+                    productToEdit: addNew ? false : productId.productId
+                })// if our case is to edit an existing product, we need to send product id - productToEdit
             });
             let data = await response.json()
-            console.log(data)
+            this.cleanNewProductForm()
+            this.setState({ addNewProdForm: false })
+            this.props.setForRender(Math.random() * 100)//for rendering parent in order Mycart component to rerender also
 
         } catch (e) {
             console.log('upload file failed', e)
         }
     }
     uploadImg = async () => {
-        const { files } = this.state;
+        const { newProduct } = this.props;
         const form = new FormData()
-        for (let i = 0; i < files.length; i++) {
-            form.append('abc', files[i], files[i].name)
+        for (let i = 0; i < newProduct.files.length; i++) {
+            form.append('abc', newProduct.files[i], newProduct.files[i].name)
         }
 
         try {
@@ -112,10 +118,24 @@ class Mycart extends React.Component {
         }
     }
 
-    render() {
-        const { productsForCart, totalPrice, categories, addNewProdForm, productToEdit } = this.state;
-        const { shoppingCart, isAdmin, newProduct, dispatch } = this.props;
+    cleanNewProductForm = () => {
+        const { dispatch } = this.props
+        dispatch(addProduct('UPLOAD_IMAGE', {}));
+        dispatch(addProduct('IMAGE_NAME', ''));
+        dispatch(addProduct('PRICE_P', 0));
+        dispatch(addProduct('NAME_P', ''));
+        dispatch(addProduct('CATEGORY_ID', 0));
+    }
 
+    showAddProductForm = () => {
+        this.cleanNewProductForm();
+        this.setState({ addNewProdForm: true })
+    }
+
+    render() {
+        const { productsForCart, totalPrice, categories, addNewProdForm } = this.state;
+        const { shoppingCart, isAdmin, newProduct, dispatch } = this.props;
+        console.log(totalPrice)
         return <div className={`myCartPanel ${shoppingCart || isAdmin ? 'flex1' : 'flex0'} ${this.props.atOrder ? 'cartAtOrder' : ''}`}>
             {!isAdmin ? <div>
                 <h2 className="storeInfoTitle ">My Cart</h2>
@@ -155,7 +175,7 @@ class Mycart extends React.Component {
                             size="large"
                             className="saveBtn"
                             startIcon={<SaveIcon />}
-                            onClick={() => this.addProduct()}
+                            onClick={() => this.addProduct(true)}
                         >
                             Add
       </Button> : <Button
@@ -164,13 +184,14 @@ class Mycart extends React.Component {
                                 size="large"
                                 className="saveBtn"
                                 startIcon={<SaveIcon />}
-                                onClick={() => this.addProduct()}
+                                onClick={() => this.addProduct(false)}
                             >
                                 Save
       </Button>}
                     </div>
 
 
+                    <div><img className="imageAdd" src="https://d2gg9evh47fn9z.cloudfront.net/800px_COLOURBOX11070076.jpg" onClick={() => this.showAddProductForm()} /></div>
                 </div>}
         </div>;
     }
@@ -178,7 +199,8 @@ class Mycart extends React.Component {
 const mapStateToProps = state => ({
     shoppingCart: state.shoppingCart.shopping_cart,
     isAdmin: state.isAdmin.isAdmin,
-    newProduct: state.newProduct
+    newProduct: state.newProduct,
+    productId: state.editProduct
 })
 
 export default connect(mapStateToProps)(withRouter(Mycart))

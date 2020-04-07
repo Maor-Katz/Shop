@@ -8,6 +8,11 @@ export const addProduct = (type, value) => (
         type: type,
         value: value
     })
+export const productToEdit = (type, value) => (
+    {
+        type: type,
+        value: value
+    })
 export const userDetails = (type, value) => (
     {
         type: type,

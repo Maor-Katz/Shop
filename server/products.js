@@ -342,7 +342,7 @@ function checkFileType(file) {
     }
     return true;
 }
-
+//upload image to server
 router.post('/uploadimg', async (req, res) => {
     const form = new formidable.IncomingForm()
     form.parse(req)
@@ -353,60 +353,24 @@ router.post('/uploadimg', async (req, res) => {
         console.log('uploaded file ' + file.name)
     })
     res.json({ ok: true, msg: 'image uploaded' })
-    // const form = Formidable.IncomingForm();
-    // const uploadsFolder = join(__dirname, 'public', uploads);
-    // form.multiples = true;
-    // form.maxFileSize = 50 * 1024 * 1024 // limit for 50 MB to upload
-    // form.uploadDir = uploadsFolder;
-    // const folderExists = await checkCreateUploadsFolder(uploadsFolder)
-    // if (!folderExists) {
-    //     return res.json({ ok: false, msg: 'there was an error creating uploads folder' })
-    // }
-    // form.parse(req, async (err, fields, files) => {
-    //     if (err) {
-    //         console.log('error parsing the files')
-    //         return res.json({
-    //             ok: false,
-    //             msg: 'error parsing the files'
-    //         })
-    //     }
-    //     if (!files.abc.length) {//it means that its one file because its obj and not array
-    //         const file = files.abc;
-    //         const isValid = await checkFileType(file)
-    //         const fileName = encodeURIComponent(file.name.replace(/&. *;+/g, '-'))
-    //         if (!isValid) {
-    //             return res.json({ ok: false, msg: 'the file recieved is invalid' })
-    //         }
-    //         try {
-    //             await fs.renameAsync(file.path, join(uploadsFolder, fileName))
-    //         } catch (e) {
-    //             console.log('the file uploade failed , trying to remove the temp file')
-    //             try { await fs.unlinkAsync(file.path) } catch (err) { }
-    //         }
-    //     } else {// multiple files
-
-    //     }
-    //     return res.json({ ok: true, msg: 'success' })
-    // })
-    // connection.query(q, (err, results) => {
-    //     if (err) throw err; 
-    //     // res.json(results);
-    //     connection.query(q1, (err, resultsSum) => {
-    //         if (err) throw err;
-
-
-    //         // res.sendFile("/result.pdf")
-    //         res.json(results)
-    //     });
-
-    // });
-
 })
+//add new product
 router.post('/addproduct', (req, res) => {
     const { name, category_id, price, imgName } = req.body
-
     let q = `INSERT INTO Products (product_name, category_id, price, img_url)
 VALUES ("${name}", ${category_id}, ${price}, "${imgName}")`
+    connection.query(q, (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+})
+
+//edit existing product
+router.post('/editproduct', (req, res) => {
+    const { name, category_id, price, img_name, productToEdit } = req.body
+    let q = `UPDATE Products
+    SET product_name = '${name}', category_id = ${category_id}, price = ${price}, img_url='${img_name}' 
+    WHERE Products.id=${productToEdit};`
     connection.query(q, (err, results) => {
         if (err) throw err;
         res.json(results);

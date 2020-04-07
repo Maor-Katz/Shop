@@ -25,7 +25,7 @@ function App() {
 
           <Route path="/register" component={() => <div className="loginPage"><Register /> <About /> <Storeinfo /></div>} />
 
-          <Route path="/shop" component={() => <div className="ShopPage"><Mycart /> <Shop setForRender={setForRender} /></div>} />
+          <Route path="/shop" component={() => <div className="ShopPage"><Mycart setForRender={setForRender}/> <Shop setForRender={setForRender} /></div>} />
           <Route path="/order" component={() => <div className="ShopPage"><Mycart atOrder={true} /> <Order /></div>} />
 
           <Redirect to="/login"

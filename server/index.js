@@ -16,4 +16,4 @@ app.use('/upload', require('./imagesRoute'))
 
 // const PORT = process.env.PORT || 80
 
-app.listen(1009, console.log('server running'));
+app.listen(1009, console.log('server running'));    

@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from '@material-ui/core/Button';
 import { connect } from "react-redux";
 import { withRouter } from 'react-router-dom';
+import Loader from './Loader'
+import payBtn from '../payBtn.jpg'
 
 class Shop extends React.Component {
 
@@ -19,7 +21,8 @@ class Shop extends React.Component {
         modalIsOpen: false,
         itemForModal: { product: '', quantity: 1, img_src: '', product_id: 0, price: 0 },
         userDetails: {},
-        userCartId: 0
+        userCartId: 0,
+        loader: true
     }
 
     customStyles = {
@@ -39,7 +42,7 @@ class Shop extends React.Component {
         this.getAllProducts();
 
         let userArayDetails = await getUserDetailsAndCartId();
-        await this.setState({ userDetails: userArayDetails[0], userCartId: userArayDetails[1] })
+        await this.setState({ userDetails: userArayDetails[0], userCartId: userArayDetails[1], loader: false })
         if (userArayDetails[1] === 'no-open-cart') {
             this.openNewCart()
         }
@@ -110,20 +113,22 @@ class Shop extends React.Component {
         this.setState({ userCartId: newCartId })
     }
     editProduct = (details) => {
-        debugger
         const { userDetails } = this.state
         if (!userDetails.isAdmin) { return }// case user is not admin, dont continute with this function
-        const{dispatch} = this.props
+        const { dispatch } = this.props
         dispatch(addProduct('NAME_P', details.product_name))
         dispatch(addProduct('PRICE_P', details.price))
         dispatch(addProduct('CATEGORY_ID', details.category_id))
+        dispatch(addProduct('EDIT_PRODUCT', details.id))
+        dispatch(addProduct('IMAGE_NAME', details.img_url))
     }
 
     render() {
-        const { categories, productsToShow, modalIsOpen, itemForModal, userDetails, userCartId } = this.state;
+        const { categories, productsToShow, modalIsOpen, itemForModal, userDetails, userCartId, loader } = this.state;
         const { shoppingCart, dispatch, isAdmin } = this.props
 
         return <div className="Shop">
+            {loader && <Loader />}
             <div className="logoutWrapper">
                 <div className="hiLogo">Welcome {userDetails.firstname}!</div>
                 <a className="logoutBtn" onClick={() => localStorage.clear()} href="/login">Logout</a>
@@ -135,9 +140,8 @@ class Shop extends React.Component {
             </div>}
 
             <h1 className="storeInfoTitle fontsize">Megasport</h1>
-            <Button variant="contained" color="primary" href="/order" onClick={() => generateVoucher(userCartId, userDetails)}>
-                Order
-      </Button>
+            {!userDetails.isAdmin && <a className="payWrapperBtn" href="/order" onClick={() => generateVoucher(userCartId, userDetails)}><img src={payBtn} className="payBtn"/></a>
+      }
             <div ><SearchBox handler={this.handler} searchProduct={this.searchProduct} /></div>
             <div className="categoryPanel">
                 <div className="categoryTitles">
