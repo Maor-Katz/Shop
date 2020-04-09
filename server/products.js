@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pdf = require('html-pdf');
 const bodyParser = require('body-parser');
@@ -21,7 +20,6 @@ const connection = mysql.createConnection({
     database: 'megasport'
 });
 
-
 connection.connect((err) => {
     if (err) {
         console.log('Error connecting to Db');
@@ -30,26 +28,22 @@ connection.connect((err) => {
     console.log('Connected to DB!');
 });
 
-function checkUserExists(req, res, next) {
-    const { email, Identity_num } = req.body;
-    let q = `SELECT * FROM users`
-    connection.query(q, (err, results) => {
-        if (err) {
-            throw err;
-        }
-        const found = results.find(user => {
-            if (user.email === email || user.Identity_num === +Identity_num) {
-                return true
+const onlyUsers = (req, res, next) => {
+    const token = req.header("token")
+    if (token) {
+        jwt.verify(token, "blah", (err, decoded) => {
+            if (err) {
+                res.sendStatus(401)
             } else {
-                return false
+                req.user = decoded
+                next();
             }
         })
-        if (found) {
-            req.user = found;
-        }
-        next();
-    });
+    } else {
+        res.status(401).send('required token')
+    }
 }
+
 function checkIfItemExists(req, res, next) {
     const { product_id, cart_id } = req.body;
     let q = `SELECT * 
@@ -63,8 +57,6 @@ function checkIfItemExists(req, res, next) {
         next();
     });
 }
-
-
 //get number of all products
 router.get('/', (req, res) => {
     let q = `SELECT COUNT(*) 
@@ -83,9 +75,8 @@ router.get('/ordersbydate/:dateString', (req, res) => {
         res.json(results);
     });
 })
-
 //get all products
-router.get('/all', (req, res) => {
+router.get('/all', onlyUsers, (req, res) => {
 
     let q = `SELECT * 
     FROM products`
@@ -95,9 +86,6 @@ router.get('/all', (req, res) => {
         res.json(results);
     });
 })
-
-
-
 //get orders to see if there is an open reservation
 router.get('/cart/:identity', (req, res) => {
     let q = `select * from orders
@@ -107,11 +95,8 @@ router.get('/cart/:identity', (req, res) => {
         res.json(results);
     });
 })
-
-
-
 //get products of costumer
-router.get('/productsbyid/:email', (req, res) => {
+router.get('/productsbyid/:email', onlyUsers, (req, res) => {
     let q = `select cartitem.quantity, cartitem.price, cartitem.sum_price, products.product_name,products.id as product_id,
     users.Identity_num, users.firstname,users.lastname, users.email, products.img_url
      from cartitem 
@@ -130,7 +115,6 @@ router.get('/productsbyid/:email', (req, res) => {
         res.json(results);
     });
 })
-
 //get sum price of specific user
 router.get('/sum/:email', (req, res) => {
     let q = `select sum(sum_price)
@@ -183,7 +167,6 @@ router.post('/newcart', (req, res) => {
         res.status(400).send('need more info')
     }
 })
-
 //get product by name
 router.get('/search/:p_name', (req, res) => {
     let q = `select * from products
@@ -193,7 +176,6 @@ router.get('/search/:p_name', (req, res) => {
         res.json(results);
     });
 })
-
 //get cartid of open reservation by id number
 router.get('/getcartid/:idnum', (req, res) => {
     let q = `select * from orders
@@ -204,8 +186,6 @@ router.get('/getcartid/:idnum', (req, res) => {
         res.json(results);
     });
 })
-
-
 //get all categories
 router.get('/category', (req, res) => {
     let q = `SELECT * 
@@ -215,7 +195,6 @@ router.get('/category', (req, res) => {
         res.json(results);
     });
 })
-
 //get amount of all orders
 router.get('/orders', (req, res) => {
     let q = `SELECT COUNT(*) 
@@ -225,7 +204,6 @@ router.get('/orders', (req, res) => {
         res.json(results);
     });
 })
-
 //add cart item if not exists, if exists, add the quantity
 router.post('/cartitem/add', checkIfItemExists, (req, res) => {
     const { product_id, quantity, price, cart_id } = req.body
@@ -251,7 +229,6 @@ WHERE product_id = ${product_id};`
     }
 
 })
-
 //delete item from cartitem table
 router.delete('/product/:id', (req, res) => {
     let q = `DELETE FROM cartitem
@@ -261,7 +238,6 @@ router.delete('/product/:id', (req, res) => {
         res.json(results);
     });
 })
-
 //confirm reservation
 router.post('/confirm/:id', (req, res) => {
     console.log('confirmmm')
@@ -364,13 +340,40 @@ VALUES ("${name}", ${category_id}, ${price}, "${imgName}")`
         res.json(results);
     });
 })
-
 //edit existing product
 router.post('/editproduct', (req, res) => {
     const { name, category_id, price, img_name, productToEdit } = req.body
     let q = `UPDATE Products
     SET product_name = '${name}', category_id = ${category_id}, price = ${price}, img_url='${img_name}' 
     WHERE Products.id=${productToEdit};`
+    connection.query(q, (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+})
+//get open reservation of specific user, if there is(return all products to specific user)
+router.get('/openreservation/:email', (req, res) => {
+    const { email } = req.body;
+    let q = `select orders.order_date, orders.user_id, orders.isDone, orders.cart_id from orders
+    inner join users
+    on users.Identity_num=orders.user_id
+    inner join cartitem 
+    on cartitem.cart_id=orders.cart_id
+    where orders.isDone=0
+    AND users.email = '${req.params.email}';`
+    connection.query(q, (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+})
+//get all completed orders of specific user
+router.get('/allreservations/:email', (req, res) => {
+    const { email } = req.body;
+    let q = `select * from orders
+    inner join users
+    on users.Identity_num=orders.user_id
+    where users.email = '${req.params.email}'
+    AND orders.isDone=1`
     connection.query(q, (err, results) => {
         if (err) throw err;
         res.json(results);

@@ -11,7 +11,6 @@ const connection = mysql.createConnection({
     database: 'megasport'
 });
 
-
 connection.connect((err) => {
     if (err) {
         console.log('Error connecting to Db');
@@ -48,7 +47,6 @@ router.post('/check', checkUserExists, (req, res) => {
         res.json({})
     }
 })
-
 //get specifc user by email
 router.get('/:email', (req, res) => {
     let q = `SELECT * FROM users
@@ -70,7 +68,6 @@ router.get('/:username', (req, res) => {
 
 router.post('/register', checkUserExists, (req, res) => {
     const { Identity_num, firstname, lastname, email, role, password, city, street } = req.body;
-    // console.log("frfrfrrf",req.user)
     if (!req.user) {//if user already exists, go to else, status 400
         if (Identity_num && firstname && lastname && email && role && password) {
             const salt = bcrypt.genSaltSync(10);
@@ -80,7 +77,6 @@ router.post('/register', checkUserExists, (req, res) => {
 VALUES (${Identity_num},"${firstname}", "${lastname}", "${email}","${role}" ,"${hash}", "${city}","${street}")`
             connection.query(q, (err, results) => {
                 if (err) throw err;
-                // res.json(results);
                 jwt.sign({ email, isAdmin: false }, "blah", { expiresIn: "10m" }, (err, token) => {
                     if (err) {
                         throw err
