@@ -1,7 +1,7 @@
 import React from 'react';
 import SearchBox from './SearchBox'
 import MediaCard from './MediaCard'
-import { getUserDetailsAndCartId, getNewCartId, generateVoucher, getCategories } from '../service'
+import { getUserDetailsAndCartId, getNewCartId, generateVoucher, getCategories, deleteStorageDirectLogin } from '../service'
 import Modal from 'react-modal';
 import { faPlus, faMinus, faWindowClose, faShoppingCart, faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { shoppingCartfunc, addProduct } from '../actions/actions'
@@ -49,7 +49,15 @@ class Shop extends React.Component {
     }
 
     getAllProducts = async () => {
-        let response = await fetch(`http://localhost:1009/products/all`);
+        let response = await fetch(`http://localhost:1009/products/all`, {
+            headers: {
+                'Content-Type': 'application/json',
+                token: localStorage.token
+            }
+        });
+        if (response.status === 401) {
+            deleteStorageDirectLogin(this.props)
+        }
         let data = await response.json()
         this.setState({ productsToShow: data })
     }
@@ -106,12 +114,13 @@ class Shop extends React.Component {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ Identity_num: userDetails.Identity_num, city: userDetails.city, street: userDetails.street, dateNow: "2020-01-18 13:17:17" })
+            body: JSON.stringify({ Identity_num: userDetails.Identity_num, city: userDetails.city, street: userDetails.street, dateNow: new Date().toISOString() })
         });
         let data = await response.json()
         let newCartId = await getNewCartId(userDetails.Identity_num);
         this.setState({ userCartId: newCartId })
     }
+    
     editProduct = (details) => {
         const { userDetails } = this.state
         if (!userDetails.isAdmin) { return }// case user is not admin, dont continute with this function
@@ -140,8 +149,8 @@ class Shop extends React.Component {
             </div>}
 
             <h1 className="storeInfoTitle fontsize">Megasport</h1>
-            {!userDetails.isAdmin && <a className="payWrapperBtn" href="/order" onClick={() => generateVoucher(userCartId, userDetails)}><img src={payBtn} className="payBtn"/></a>
-      }
+            {!userDetails.isAdmin && <a className="payWrapperBtn" href="/order" onClick={() => generateVoucher(userCartId, userDetails)}><img src={payBtn} className="payBtn" /></a>
+            }
             <div ><SearchBox handler={this.handler} searchProduct={this.searchProduct} /></div>
             <div className="categoryPanel">
                 <div className="categoryTitles">

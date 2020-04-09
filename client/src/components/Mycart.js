@@ -4,7 +4,7 @@ import { faShekelSign } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { withRouter } from 'react-router-dom';
-import { getUserDetailsAndCartId, getCategories } from '../service'
+import { getUserDetailsAndCartId, getCategories, deleteStorageDirectLogin } from '../service'
 import { isAdminDetails } from '../actions/actions'
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
@@ -52,7 +52,15 @@ class Mycart extends React.Component {
     }
 
     getUserProducts = async () => {
-        let response = await fetch(`http://localhost:1009/products/productsbyid/${localStorage.email}`);
+        let response = await fetch(`http://localhost:1009/products/productsbyid/${localStorage.email}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                token: localStorage.token
+            }
+        });
+        if (response.status === 401) {
+            deleteStorageDirectLogin(this.props);
+        }
         let data = await response.json()
         this.setState({ productsForCart: data })
     }

@@ -8,15 +8,17 @@ function fieldsCounter(obj) {
     }
     return count
 }
+
 async function getUserDetailsAndCartId() {
     let response = await fetch(`http://localhost:1009/auth/${localStorage.email}`);
     let data = await response.json()
-    let response2 = await fetch(`http://localhost:1009/products/cart/${data[0].Identity_num}`);//looking for open cart, if there is no open, we need to open new cart
+    let response2 = await fetch(`http://localhost:1009/products/cart/${data[0].Identity_num || ''}`);//looking for open cart, if there is no open, we need to open new cart
     let data2 = await response2.json()
     let openCart = data2.filter(cart => cart.isDone == 0)[0] || []
 
     return [data[0], openCart.cart_id || 'no-open-cart']
 }
+
 async function getNewCartId(idnum) {
     let response = await fetch(`http://localhost:1009/products/getcartid/${idnum}`);
     let data = await response.json()
@@ -72,7 +74,23 @@ async function getCategories() {
     let data = await response.json()
     return data
 }
+//to delete storage need to pass this.props
+function deleteStorageDirectLogin(props) {
+    alert('Required token!')
+    localStorage.clear();
+    props.history.push('/login')
+}
 
+async function productsCounterUser(email) {
+    let response = await fetch(`http://localhost:1009/products/openreservation/${email}`);
+    let data = await response.json()
+    return data
+}
+async function allCompletedOrdersForUser(email) {
+    let response = await fetch(`http://localhost:1009/products/allreservations/${email}`);
+    let data = await response.json()
+    return data
+}
 
 module.exports = {
     fieldsCounter,
@@ -81,4 +99,7 @@ module.exports = {
     getInvoice,
     generateVoucher,
     getCategories,
+    deleteStorageDirectLogin,
+    productsCounterUser,
+    allCompletedOrdersForUser
 }

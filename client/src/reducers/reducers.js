@@ -6,7 +6,7 @@ import { userDetails } from './userdetails';
 import { isAdmin } from './isAdmin';
 import { newProduct } from './addProduct';
 import { editProduct } from './EditProduct';
-
+import { userStatus } from './userStatus';
 
 export const allReducers = combineReducers({
     newUser,
@@ -15,5 +15,6 @@ export const allReducers = combineReducers({
     userDetails,
     isAdmin,
     newProduct,
-    editProduct
+    editProduct,
+    userStatus
 });

@@ -3,6 +3,12 @@ export const newUser = (type, value) => (
         type: type,
         value: value
     })
+export const setUserStatus = (type, value) => (
+    {
+        type: type,
+        value: value
+    })
+
 export const addProduct = (type, value) => (
     {
         type: type,

@@ -75,7 +75,7 @@ function Login(props) {
   }
 
   const [errMsg, setErrMsg] = useState('');
-
+  const { userStatus } = props;
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -139,8 +139,8 @@ function Login(props) {
           className={classes.submit}
           onClick={() => props.history.push('/shop')}
         >
-          Go Shopping!
-            </Button>
+          {userStatus.userOpenOrder ? 'Continue Shopping!' : 'Start Shopping'}
+        </Button>
       }
       <Box mt={8}>
         <Copyright />
@@ -150,7 +150,8 @@ function Login(props) {
 }
 
 const mapStateToProps = state => ({
-  existingUser: state.existingUser
+  existingUser: state.existingUser,
+  userStatus: state.userStatus
 })
 
 export default connect(mapStateToProps)(withRouter(Login))

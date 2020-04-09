@@ -3,6 +3,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Link from '@material-ui/core/Link';
@@ -242,24 +244,26 @@ function Register(props) {
                                     autoFocus
                                     onChange={(e) => changeHandler('STREET', e)}
                                 />
-                                <Select
-                                    required
-                                    fullWidth
-                                    labelId="demo-simple-select-filled-label"
-                                    id="demo-simple-select-filled"
-                                    value={props.newUser.city}
-                                    onChange={(e) => changeHandler('CITY', e)}
-                                >
-                                    <MenuItem value="">
-                                        <em>None</em>
-                                    </MenuItem>
-                                    <MenuItem value={"Tel Aviv"}>Tel Aviv</MenuItem>
-                                    <MenuItem value={"Haifa"}>Haifa</MenuItem>
-                                    <MenuItem value={"Beer-Shave"}>Beer-Shave</MenuItem>
-                                </Select>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-autowidth-label">Select City...</InputLabel>
+                                    <Select
+                                        required
+                                        fullWidth
+                                        labelId="demo-simple-select-filled-label"
+                                        id="demo-simple-select-filled"
+                                        value={props.newUser.city}
+                                        onChange={(e) => changeHandler('CITY', e)}
+                                    >
+                                        <MenuItem value="" disabled>
+                                            <em>None</em>
+                                        </MenuItem>
+                                        <MenuItem value={"Tel Aviv"}>Tel Aviv</MenuItem>
+                                        <MenuItem value={"Haifa"}>Haifa</MenuItem>
+                                        <MenuItem value={"Beer-Shave"}>Beer-Shave</MenuItem>
+                                    </Select>
+                                </FormControl>
                             </div>
                             }
-
                             {errMsg && <span className="errMsg">{errMsg}<span className="chat"></span></span>}
                             {nextstep ? <Button
                                 disabled={!Object.values(props.newUser).every(x => x)}

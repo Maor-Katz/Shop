@@ -6,29 +6,48 @@
   display: flex;
   height: 100vh;
 }
+
 .loginPanel{
   flex: 1;
 }
+
 .aboutPage{
   flex: 1;
   background-image: url(https://images.unsplash.com/photo-1582020086775-1c3fc831a1c7?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max);
   
   background-size: cover;
 }
+
 .aboutTitle{
   color: white;
 }
+
 .storeInfoPage{
-  background-color: bisque;
+  background-image: url('https://ak1.ostkcdn.com/images/products/is/images/direct/12f3ac9d26a9cd14bf4c40a2a953b985b88c58df/Costway-Ab-Fitness-Crunch-Abdominal-Exercise-Workout-Machine-Glider-Roller-Pushup.jpg?impolicy=medium');
+  background-repeat: no-repeat;
+  background-position: center;
   flex: 1;
 }
+
+.infoDetails{
+  font-weight: bold;
+  border-radius: 6px;
+  color: white;
+  padding: 10px;
+  background-color: black;
+  display: inline-block;
+  line-height: 25px;
+}
+
 .registerPage{
   flex: 1;
   overflow: auto;
 }
+
 .paddingClass{
   padding: 10px;
 }
+
 .errMsg{
   display:inline-block;
   padding:5px 6px 8px 6px;
@@ -37,6 +56,7 @@
   background-color:red;
   position: relative;
 }
+
 .chat:after {
   content: "";
   position:absolute;
@@ -47,6 +67,7 @@
   right: -13px; 
   top: 2px;
 }
+
 .storeParagraph{
   display:inline-block;
   padding:5px 6px 8px 6px;
@@ -57,6 +78,7 @@
   position: relative;
   font-weight: bold;
 }
+
 .storeInfoTitle{
     padding: 10px;
     background-image: url('https://ak5.picdn.net/shutterstock/videos/6584225/thumb/1.jpg');
@@ -68,11 +90,12 @@
     margin: 0;
     line-height: 1;
 }
+
 .numOfProducts{
   font-family: Titillium Web,sans-serif;
-  margin-top: 20px;
   font-weight: bold;
 }
+
 .logo{
   position: absolute;
   right: 10px;
@@ -81,14 +104,17 @@
   height: 100px;
   border-radius: 50%;
 }
+
 .fontsize{
   font-size: 50px;
 }
+
 .Shop{
   background-color: bisque;
   flex: 3;
   position: relative;
 }
+
 .ShopPage{
   display: flex;
   min-height: 100vh;
@@ -97,12 +123,14 @@
 .searchProduct{
 margin: 0 auto !important;
 }
+
 .categoryTitles{
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     margin-top: 20px;
 }
+
 .divider{
     background-color: gray;
     height: 1px;
@@ -113,11 +141,13 @@ margin: 0 auto !important;
     right: -18px;
     top: 14px;
   }
+
 .specificCategory{
   margin-left: 15px;  
   cursor: pointer;
   font-weight: bold;
 }
+
 .categoryWrapper{
   position: relative;
 }
@@ -125,22 +155,27 @@ margin: 0 auto !important;
 .size11{
   font-size: 11px;
 }
+
 .productsList{
   margin-top: 50px;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
 }
+
 .addButton{
   margin: auto !important;
 }
+
 .qunatityModal{
   margin: 0px 4px;
   user-select: none;
 }
+
 .qunatityDiv{
   text-align: center;
 }
+
 .qunatityBtn{
   font-size: 11px;
   background-color: lightgray;
@@ -154,19 +189,23 @@ margin: 0 auto !important;
   right: 3px;
   cursor: pointer;
 }
+
 .imgModal{
   width: 200px;
   height: 200px;
 }
+
 .productModal{
   font-weight: bold;
   text-align: center;
   margin: 10px;
 }
+
 .addBtnModal{
   text-align: center;
   margin-top: 5px;
 }
+
 .categoryAll{
   position: relative;
 }
@@ -175,24 +214,30 @@ margin: 0 auto !important;
   background-color: #8d877c;
   overflow-y: auto;
 }
+
 .flex1{
   flex: 1;
   transition: 0.3s;
 }
+
 .flex0{
   flex: 0;
   transition: 0.3s;
 }
+
 .cartImg{
   width: 50px;
   height: 50px;
 }
+
 .padding{
   padding: 2px !important;
 }
+
 .fontSize{
   font-size: 13px !important;
 }
+
 .totalPrice{
   text-align: center;
   font-weight: bold;
@@ -200,6 +245,7 @@ margin: 0 auto !important;
   margin-top: 15px;
   padding: 15px;
 }
+
 .openCartBtn{
   cursor: pointer !important;
   position: absolute;
@@ -210,19 +256,23 @@ margin: 0 auto !important;
   background-color: #8d877c;
   border-radius: 50%;
 }
+
 .shoppingIcon{
   font-size: 18px ;
   margin-top: 30px;
   margin-left: 30px;
 }
+
 .cartAtOrder{
   flex: 0.4;
 }
+
 .orderPage{
   flex:1;
   background-color: bisque;
   height: 100vh;
 }
+
 .autosuggest{
   width: 50%;
   min-height: 10%;
@@ -230,19 +280,24 @@ margin: 0 auto !important;
   background-color: white;
   margin: 0 auto;
 }
+
 .red{background-color: yellow;}
+
 .backToShop{
   position: absolute !important;
   right: 10px !important;
   top: 10px !important;
 }
+
 .sectionTitle{
   width: 150px;
   display: inline-block;
 }
+
 .confirmBtn{
   margin-top: 25px !important;
 }
+
 .lineModal{
     width: 3px;
     height: 100%;
@@ -253,8 +308,7 @@ margin: 0 auto !important;
 }
 
 .tooltip {
-  position: relative;
-  
+  position: relative;  
 }
 
 .tooltip .tooltiptext {
@@ -274,28 +328,34 @@ margin: 0 auto !important;
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
 .black:after{
   border-bottom: 12px solid black;
   transform: rotate(50deg);
   top: 70px;
   right: 40px;
 }
+
 .successMsg{
   text-align: center;
   font-weight: bold;
 }
+
 .width111{
   width: 111px;
 }
+
 .voucherBtn{
   margin: 0 auto;
   text-align: center;
   margin-top: 15px;
   margin-bottom: 15px;
 }
+
 .leftMargin{
   margin-left: 10px;
 }
+
 .logoutWrapper{
   position: absolute;
   top : 15px;
@@ -303,15 +363,19 @@ margin: 0 auto !important;
   font-weight: bold;
   color: #3f51b5
 }
+
 .logoutBtn{
   cursor: pointer;
 }
+
 .logoutBtn:visited {
   color: #3f51b5
 }
+
 .saveBtn{
   margin-top: 30px !important;
 }
+
 .imageAdd{
   width: 75px;
   height: 75px;
@@ -319,6 +383,7 @@ margin: 0 auto !important;
   margin-top: 50px;
   cursor: pointer;
 }
+
 .loaderWrapper{
     width: 100%;
     height: 100%;
@@ -326,13 +391,44 @@ margin: 0 auto !important;
     z-index: 9999;
     position: absolute;
 }
+
 .payBtn{
     width: 170px;
     border-radius: 10px;
 }
+
 .payWrapperBtn{
-  position: fixed;
+    position: fixed;
     right: 10%;
     top: 13%;
     z-index: 90;
+}
+
+.circle1{
+  border-radius: 50%;
+  background-color: black;
+  height: 50px;
+  width: 50px;
+  margin-left: 130px;
+}
+
+.circle2{
+  border-radius: 50%;
+  background-color: black;
+  height: 40px;
+  width: 40px;
+  margin-left: 120px;
+}
+
+.circle3{
+  border-radius: 50%;
+  background-color: black;
+  height: 30px;
+  width: 30px;
+  margin-left: 110px;
+}
+
+.underline{
+  text-decoration: underline;
+  padding-right: 5px;
 }
