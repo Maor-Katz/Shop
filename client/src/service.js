@@ -12,7 +12,7 @@ function fieldsCounter(obj) {
 async function getUserDetailsAndCartId() {
     let response = await fetch(`http://localhost:1009/auth/${localStorage.email}`);
     let data = await response.json()
-    let response2 = await fetch(`http://localhost:1009/products/cart/${data[0].Identity_num || ''}`);//looking for open cart, if there is no open, we need to open new cart
+    let response2 = await fetch(`http://localhost:1009/products/cart/${data[0] && data[0].Identity_num}`);//looking for open cart, if there is no open, we need to open new cart
     let data2 = await response2.json()
     let openCart = data2.filter(cart => cart.isDone == 0)[0] || []
 
