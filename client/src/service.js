@@ -1,5 +1,5 @@
 
-function fieldsCounter(obj) {
+export function fieldsCounter(obj) {
     let count = 0;
     for (var f in obj) {//count how many field are filled
         if (obj[f]) {
@@ -9,7 +9,7 @@ function fieldsCounter(obj) {
     return count
 }
 
-async function getUserDetailsAndCartId() {
+export async function getUserDetailsAndCartId() {
     let response = await fetch(`http://localhost:1009/auth/${localStorage.email}`);
     let data = await response.json()
     let response2 = await fetch(`http://localhost:1009/products/cart/${data[0] && data[0].Identity_num}`);//looking for open cart, if there is no open, we need to open new cart
@@ -19,7 +19,7 @@ async function getUserDetailsAndCartId() {
     return [data[0], openCart.cart_id || 'no-open-cart']
 }
 
-async function getNewCartId(idnum) {
+export async function getNewCartId(idnum) {
     let response = await fetch(`http://localhost:1009/products/getcartid/${idnum}`);
     let data = await response.json()
     if (data[0]) {
@@ -29,7 +29,7 @@ async function getNewCartId(idnum) {
     }
 }
 
-async function getInvoice(e, openNewTab) {
+export async function getInvoice(e, openNewTab) {
     fetch(`http://localhost:1009/products/invoice`, { responseType: 'blob' })
         .then((response) => {
             return response.blob();
@@ -58,7 +58,7 @@ async function getInvoice(e, openNewTab) {
         });
 }
 
-async function generateVoucher(userCartId, userDetails) {
+export async function generateVoucher(userCartId, userDetails) {
     let response = await fetch(`http://localhost:1009/products/download/${userCartId}`, {
         method: 'POST',
         headers: {
@@ -69,37 +69,27 @@ async function generateVoucher(userCartId, userDetails) {
     let data = await response.json()
 }
 
-async function getCategories() {
+export async function getCategories() {
     let response = await fetch(`http://localhost:1009/products/category`);
     let data = await response.json()
     return data
 }
 //to delete storage need to pass this.props
-function deleteStorageDirectLogin(props) {
+export function deleteStorageDirectLogin(props) {
     alert('Required token!')
     localStorage.clear();
     props.history.push('/login')
 }
 
-async function productsCounterUser(email) {
+export async function productsCounterUser(email) {
     let response = await fetch(`http://localhost:1009/products/openreservation/${email}`);
     let data = await response.json()
     return data
 }
-async function allCompletedOrdersForUser(email) {
+
+export async function allCompletedOrdersForUser(email) {
     let response = await fetch(`http://localhost:1009/products/allreservations/${email}`);
     let data = await response.json()
     return data
 }
 
-module.exports = {
-    fieldsCounter: fieldsCounter,
-    getUserDetailsAndCartId:getUserDetailsAndCartId,
-    getNewCartId:getNewCartId,
-    getInvoice:getInvoice,
-    generateVoucher:generateVoucher,
-    getCategories:getCategories,
-    deleteStorageDirectLogin:deleteStorageDirectLogin,
-    productsCounterUser:productsCounterUser,
-    allCompletedOrdersForUser:allCompletedOrdersForUser
-}
