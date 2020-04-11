@@ -93,13 +93,13 @@ async function allCompletedOrdersForUser(email) {
 }
 
 module.exports = {
-    fieldsCounter,
-    getUserDetailsAndCartId,
-    getNewCartId,
-    getInvoice,
-    generateVoucher,
-    getCategories,
-    deleteStorageDirectLogin,
-    productsCounterUser,
-    allCompletedOrdersForUser
+    fieldsCounter: fieldsCounter,
+    getUserDetailsAndCartId:getUserDetailsAndCartId,
+    getNewCartId:getNewCartId,
+    getInvoice:getInvoice,
+    generateVoucher:generateVoucher,
+    getCategories:getCategories,
+    deleteStorageDirectLogin:deleteStorageDirectLogin,
+    productsCounterUser:productsCounterUser,
+    allCompletedOrdersForUser:allCompletedOrdersForUser
 }
