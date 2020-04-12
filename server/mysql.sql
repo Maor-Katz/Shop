@@ -9,6 +9,7 @@ CREATE TABLE Users (
     password varchar(255),
     city varchar(255),
     street varchar(255),
+    isAdmin boolean default 0,
     primary key(Identity_num)
 );
 --password for users below is 123
