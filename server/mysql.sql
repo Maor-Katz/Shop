@@ -68,8 +68,7 @@ CREATE TABLE Orders (
     4DigitsCard int,
     isDone boolean default false,
     primary key(id),
-    FOREIGN KEY (user_id) REFERENCES Users(Identity_num),
-        
+    FOREIGN KEY (user_id) REFERENCES Users(Identity_num)
 );
 
 INSERT INTO Orders (user_id, cart_id, total_price, city, street, arrival_date, order_date, 4DigitsCard)
