@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
 const pdfTemplate = require('./public/mytemplate')
-
+//needs my credentials
 const connection = mysql.createConnection({
     host: '',
     user: '',
@@ -370,13 +370,13 @@ function checkFileType(file, cb) {
         cb('Error: Images Only!');
     }
 }
-
+//need aws s3 credetials
 //upload image to server
 router.post('/uploadimg', async (req, res) => {
     const s3 = new aws.S3({
-        accessKeyId: 'AKIASDV2U6NJMZQRJD64',
-        secretAccessKey: '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',
-        bucket: 'maor-katz-new-bucket1990'
+        accessKeyId: '',
+        secretAccessKey: '',
+        bucket: ''
     })
 
     const form = new formidable.IncomingForm()
