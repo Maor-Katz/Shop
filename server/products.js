@@ -8,16 +8,22 @@ const formidable = require('formidable');
 const bluebird = require('bluebird');
 const fs = bluebird.promisifyAll(require('fs'));
 const app = express()
-app.use(bodyParser.urlencoded({ extended: true }))
+const path = require('path');
+const aws = require('aws-sdk');
+const multerS3 = require('multer-s3');
+const multer = require('multer');
+
+
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
 const pdfTemplate = require('./public/mytemplate')
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'megasport'
+    host: 'qbhol6k6vexd5qjs.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+    user: 'jtctj841reqed4pa',
+    password: 'mp7wqnw4limu2z5o',
+    database: 'smwqc0rzzgmbwwzm'
 });
 
 connection.connect((err) => {
@@ -45,7 +51,7 @@ const onlyUsers = (req, res, next) => {
 }
 
 function checkIfItemExists(req, res, next) {
-    const { product_id, cart_id } = req.body;
+    const {product_id, cart_id} = req.body;
     let q = `SELECT * 
     FROM cartitem`
     connection.query(q, (err, results) => {
@@ -57,18 +63,20 @@ function checkIfItemExists(req, res, next) {
         next();
     });
 }
+
 //get number of all products
 router.get('/', (req, res) => {
     let q = `SELECT COUNT(*) 
     FROM products`
     connection.query(q, (err, results) => {
         if (err) throw err;
+        res.header("Cache-Control", "no-cache, no-store, must-revalidate");
         res.json(results);
     });
 })
 //check how many orders for specific date
 router.get('/ordersbydate/:dateString', (req, res) => {
-    let q = `SELECT * FROM megasport.orders
+    let q = `SELECT * FROM orders
     where arrival_date like'%${req.params.dateString}%'`
     connection.query(q, (err, results) => {
         if (err) throw err;
@@ -82,16 +90,19 @@ router.get('/all', onlyUsers, (req, res) => {
     FROM products`
     connection.query(q, (err, results) => {
         if (err) throw err;
-
+        res.header("Cache-Control", "no-cache, no-store, must-revalidate");
         res.json(results);
+
     });
 })
 //get orders to see if there is an open reservation
 router.get('/cart/:identity', (req, res) => {
+    console.log(req.params, 'koko')
     let q = `select * from orders
     where user_id= ${req.params.identity}`
     connection.query(q, (err, results) => {
         if (err) throw err;
+        res.header("Cache-Control", "no-cache, no-store, must-revalidate");
         res.json(results);
     });
 })
@@ -112,6 +123,7 @@ router.get('/productsbyid/:email', onlyUsers, (req, res) => {
      AND orders.isDone=0`
     connection.query(q, (err, results) => {
         if (err) throw err;
+        res.header("Cache-Control", "no-cache, no-store, must-revalidate");
         res.json(results);
     });
 })
@@ -131,6 +143,7 @@ router.get('/sum/:email', (req, res) => {
      AND orders.isDone=0`
     connection.query(q, (err, results) => {
         if (err) throw err;
+        res.header("Cache-Control", "no-cache, no-store, must-revalidate");
         res.json(results);
     });
 })
@@ -147,15 +160,15 @@ router.get('/bycategory/:categoryid', (req, res) => {
 })
 //open new cart
 router.post('/newcart', (req, res) => {
-    const { Identity_num, city, street, dateNow } = req.body
+    const {Identity_num, city, street, dateNow} = req.body
     if (Identity_num && city && street && dateNow) {
-        let q1 = `INSERT INTO Cart (user_id)
+        let q1 = `INSERT INTO cart (user_id)
     VALUES (${Identity_num})`
 
         connection.query(q1, (err, results) => {
             if (err) throw err;
 
-            let q2 = `INSERT INTO Orders (user_id, cart_id, total_price, city, street, arrival_date, order_date, 4DigitsCard)
+            let q2 = `INSERT INTO orders (user_id, cart_id, total_price, city, street, arrival_date, order_date, 4DigitsCard)
     VALUES (${Identity_num}, ${results.insertId}, 0, "${city}", "${street}", 'TBD', '${dateNow}', 0)`
             console.log(results.insertId)
             connection.query(q2, (err, lastResults) => {
@@ -178,6 +191,7 @@ router.get('/search/:p_name', (req, res) => {
 })
 //get cartid of open reservation by id number
 router.get('/getcartid/:idnum', (req, res) => {
+    console.log(req.params, 'blah')
     let q = `select * from orders
     where user_id= ${req.params.idnum}
     AND isDone=0`
@@ -192,6 +206,7 @@ router.get('/category', (req, res) => {
     FROM category`
     connection.query(q, (err, results) => {
         if (err) throw err;
+        res.header("Cache-Control", "no-cache, no-store, must-revalidate");
         res.json(results);
     });
 })
@@ -206,7 +221,8 @@ router.get('/orders', (req, res) => {
 })
 //add cart item if not exists, if exists, add the quantity
 router.post('/cartitem/add', checkIfItemExists, (req, res) => {
-    const { product_id, quantity, price, cart_id } = req.body
+    const {product_id, quantity, price, cart_id, sum_price} = req.body
+    console.log(req.body, "fefe")
     if (product_id && quantity && price && cart_id) {
         let q;
         if (req.itemExists) {
@@ -216,8 +232,8 @@ SET quantity=quantity+${quantity},sum_price=(price*quantity)
 WHERE product_id = ${product_id};`
         } else {
             console.log('not esxits')
-            q = `INSERT INTO cartItem (product_id, quantity, price, cart_id)
-    VALUES (${product_id}, ${quantity}, ${price}, ${cart_id})`
+            q = `INSERT INTO cartitem (product_id, quantity, price, sum_price, cart_id)
+    VALUES (${product_id}, ${quantity}, ${price}, ${sum_price},${cart_id})`
         }
 
         connection.query(q, (err, results) => {
@@ -241,7 +257,7 @@ router.delete('/product/:id', (req, res) => {
 //confirm reservation
 router.post('/confirm/:id', (req, res) => {
     console.log('confirmmm')
-    const { arrival_date } = req.body
+    const {arrival_date} = req.body
     if (arrival_date && req.params.id) {
         let q1 = `UPDATE orders
         SET arrival_date = '${arrival_date}', isDone= 1
@@ -289,6 +305,7 @@ router.post('/download/:cartid', (req, res) => {
 router.get('/invoice', (req, res) => {
     res.download(__dirname + "/public/result.pdf")
 })
+
 //this function returns true or false
 async function checkCreateUploadsFolder(uploadsFolder) {
     try {
@@ -308,6 +325,7 @@ async function checkCreateUploadsFolder(uploadsFolder) {
     }
     return true;
 }
+
 //return true or false in case it was successfull
 function checkFileType(file) {
     const type = file.type.split('/').pop()
@@ -318,22 +336,104 @@ function checkFileType(file) {
     }
     return true;
 }
+
+const s3 = new aws.S3({
+    accessKeyId: 'AKIASDV2U6NJMZQRJD64',
+    secretAccessKey: 'OsUe0eq0qnYtxF+e7yt0P4nSIXkp+w3LaGyhpqn',
+    bucket: 'maor-katz-new-bucket1990'
+})
+const profileImgUpload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'onclick',
+        acl: 'public-read',
+        key: function (req, file, cb) {
+            cb(null, path.basename(file.originalname, path.extname(file.originalname)) + '-' + Date.now() + path.extname(file.originalname))
+        }
+    }),
+    limits: {fileSize: 20000000}, // In bytes: 2000000 bytes = 2 MB
+    fileFilter: function (req, file, cb) {
+        checkFileType(file, cb);
+    }
+}).single('profileImage');
+
+function checkFileType(file, cb) {
+    // Allowed ext
+    const filetypes = /jpeg|jpg|png|gif/;
+    // Check ext
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // Check mime
+    const mimetype = filetypes.test(file.mimetype);
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb('Error: Images Only!');
+    }
+}
+
 //upload image to server
 router.post('/uploadimg', async (req, res) => {
+    const s3 = new aws.S3({
+        accessKeyId: 'AKIASDV2U6NJMZQRJD64',
+        secretAccessKey: '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',
+        bucket: 'maor-katz-new-bucket1990'
+    })
+
     const form = new formidable.IncomingForm()
-    form.parse(req)
-    form.on('fileBegin', (name, file) => {
-        file.path = __dirname + '/public/uploads/' + file.name
+    await form.parse(req, function (err, fields, files) {
+        console.log(files.abc.path, 'filessman')
+        console.log(files.abc)
+        console.log("hi")
+        const fileContent = fs.readFileSync(`tmp/${files.name}`);
+
+        console.log(fileContent, "filecontent duede")
+        const params = {
+            Bucket: 'maor-katz-new-bucket1990',
+            Key: files.abc.name, // File name you want to save as in S3
+            Body: fileContent
+        };
+        s3.upload(params, function (err, data) {
+            if (err) {
+                throw err;
+            }
+            console.log(`File uploaded successfully. ${data.Location}`);
+        });
+        console.log(fileContent, 'ahaha done');
     })
-    form.on('file', (name, file) => {
-        console.log('uploaded file ' + file.name)
-    })
-    res.json({ ok: true, msg: 'image uploaded' })
-})
+// });
+
+// form.on('file', (name, file) => {
+    // file.path = path.join(__dirname + '/public/uploads/' + file.name)
+
+    // const fileContent = fs.readFileSync(file.path);
+
+// Setting up S3 upload parameters
+//         const params = {
+//             Bucket: 'maor-katz-new-bucket1990',
+//             Key: file.name, // File name you want to save as in S3
+//             Body: fileContent
+//         };
+
+// Uploading files to the bucket
+//         s3.upload(params, function (err, data) {
+//             if (err) {
+//                 throw err;
+//             }
+//             console.log(`File uploaded successfully. ${data.Location}`);
+//         });
+//         console.log(file.path);
+//     })
+    // form.on('file', (name, file) => {
+    //     console.log('uploaded file ' + file.name)
+    // })
+    res.json({ok: true, msg: 'image uploaded'})
+});
+
+
 //add new product
 router.post('/addproduct', (req, res) => {
-    const { name, category_id, price, imgName } = req.body
-    let q = `INSERT INTO Products (product_name, category_id, price, img_url)
+    const {name, category_id, price, imgName} = req.body
+    let q = `INSERT INTO products (product_name, category_id, price, img_url)
 VALUES ("${name}", ${category_id}, ${price}, "${imgName}")`
     connection.query(q, (err, results) => {
         if (err) throw err;
@@ -342,10 +442,10 @@ VALUES ("${name}", ${category_id}, ${price}, "${imgName}")`
 })
 //edit existing product
 router.post('/editproduct', (req, res) => {
-    const { name, category_id, price, img_name, productToEdit } = req.body
-    let q = `UPDATE Products
+    const {name, category_id, price, img_name, productToEdit} = req.body
+    let q = `UPDATE products
     SET product_name = '${name}', category_id = ${category_id}, price = ${price}, img_url='${img_name}' 
-    WHERE Products.id=${productToEdit};`
+    WHERE products.id=${productToEdit};`
     connection.query(q, (err, results) => {
         if (err) throw err;
         res.json(results);
@@ -353,7 +453,7 @@ router.post('/editproduct', (req, res) => {
 })
 //get open reservation of specific user, if there is(return all products to specific user)
 router.get('/openreservation/:email', (req, res) => {
-    const { email } = req.body;
+    const {email} = req.body;
     let q = `select orders.order_date, orders.user_id, orders.isDone, orders.cart_id from orders
     inner join users
     on users.Identity_num=orders.user_id
@@ -368,7 +468,7 @@ router.get('/openreservation/:email', (req, res) => {
 })
 //get all completed orders of specific user
 router.get('/allreservations/:email', (req, res) => {
-    const { email } = req.body;
+    const {email} = req.body;
     let q = `select * from orders
     inner join users
     on users.Identity_num=orders.user_id

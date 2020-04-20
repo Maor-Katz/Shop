@@ -10,9 +10,12 @@ export function fieldsCounter(obj) {
 }
 
 export async function getUserDetailsAndCartId() {
-    let response = await fetch(`http://localhost:1009/auth/${localStorage.email}`);
+    let response = await fetch(`http://localhost/auth/${localStorage.email}`);
     let data = await response.json()
-    let response2 = await fetch(`http://localhost:1009/products/cart/${data[0] && data[0].Identity_num}`);//looking for open cart, if there is no open, we need to open new cart
+    if (data.length === 0) {
+        return []
+    }
+    let response2 = await fetch(`http://localhost/products/cart/${data[0] && data[0].Identity_num}`);//looking for open cart, if there is no open, we need to open new cart
     let data2 = await response2.json()
     let openCart = data2.filter(cart => cart.isDone == 0)[0] || []
 
@@ -20,7 +23,7 @@ export async function getUserDetailsAndCartId() {
 }
 
 export async function getNewCartId(idnum) {
-    let response = await fetch(`http://localhost:1009/products/getcartid/${idnum}`);
+    let response = await fetch(`http://localhost/products/getcartid/${idnum}`);
     let data = await response.json()
     if (data[0]) {
         return data[0].cart_id;
@@ -30,7 +33,7 @@ export async function getNewCartId(idnum) {
 }
 
 export async function getInvoice(e, openNewTab) {
-    fetch(`http://localhost:1009/products/invoice`, { responseType: 'blob' })
+    fetch(`http://localhost/products/invoice`, { responseType: 'blob' })
         .then((response) => {
             return response.blob();
         })
@@ -59,18 +62,25 @@ export async function getInvoice(e, openNewTab) {
 }
 
 export async function generateVoucher(userCartId, userDetails) {
-    let response = await fetch(`http://localhost:1009/products/download/${userCartId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ firstname: userDetails.firstname, lastname: userDetails.lastname, email: userDetails.email })
-    });
-    let data = await response.json()
+    debugger
+    try{
+        let response = await fetch(`http://localhost/products/download/${userCartId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ firstname: userDetails.firstname, lastname: userDetails.lastname, email: userDetails.email })
+        });
+        let data = await response.json()
+    }catch(err){
+        console.log(err,"thisis what")
+        debugger
+    }
+    
 }
 
 export async function getCategories() {
-    let response = await fetch(`http://localhost:1009/products/category`);
+    let response = await fetch(`http://localhost/products/category`);
     let data = await response.json()
     return data
 }
@@ -82,13 +92,13 @@ export function deleteStorageDirectLogin(props) {
 }
 
 export async function productsCounterUser(email) {
-    let response = await fetch(`http://localhost:1009/products/openreservation/${email}`);
+    let response = await fetch(`http://localhost/products/openreservation/${email}`);
     let data = await response.json()
     return data
 }
 
 export async function allCompletedOrdersForUser(email) {
-    let response = await fetch(`http://localhost:1009/products/allreservations/${email}`);
+    let response = await fetch(`http://localhost/products/allreservations/${email}`);
     let data = await response.json()
     return data
 }

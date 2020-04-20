@@ -34,7 +34,7 @@ export default function CustomizedInputBase(props) {
 
 
   return (
-    <Paper component="form" className={classes.root}>
+    <Paper component="form" className={`${classes.root} glassField`}>
       <InputBase
         className={classes.input}
         placeholder="Search Product..."

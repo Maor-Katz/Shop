@@ -41,3 +41,8 @@ export const isAdminDetails = (type, value) => (
         type: type,
         value: value
     })
+export const chooseView = (type, value) => (
+    {
+        type: type,
+        value: value
+    })

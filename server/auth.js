@@ -5,10 +5,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'megasport'
+    host: 'qbhol6k6vexd5qjs.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+    user: 'jtctj841reqed4pa',
+    password: 'mp7wqnw4limu2z5o',
+    database: 'smwqc0rzzgmbwwzm'
 });
 
 connection.connect((err) => {
@@ -53,6 +53,7 @@ router.get('/:email', (req, res) => {
     where email='${req.params.email}'`
     connection.query(q, (err, results) => {
         if (err) throw err;
+        res.header("Cache-Control", "no-cache, no-store, must-revalidate");
         res.json(results);
     });
 })
@@ -73,7 +74,7 @@ router.post('/register', checkUserExists, (req, res) => {
             const salt = bcrypt.genSaltSync(10);
             const hash = bcrypt.hashSync(password, salt);
             console.log(hash);
-            let q = `INSERT INTO Users (Identity_num, firstname, lastname, email, role, password, city, street)
+            let q = `INSERT INTO users (Identity_num, firstname, lastname, email, role, password, city, street)
 VALUES (${Identity_num},"${firstname}", "${lastname}", "${email}","${role}" ,"${hash}", "${city}","${street}")`
             connection.query(q, (err, results) => {
                 if (err) throw err;
@@ -94,6 +95,7 @@ VALUES (${Identity_num},"${firstname}", "${lastname}", "${email}","${role}" ,"${
 
 router.post('/login', checkUserExists, (req, res) => {
     const { email, password } = req.body;
+    console.log(req.body)
     if (req.user) {
         if (bcrypt.compareSync(password, req.user.password)) {
             jwt.sign({ email, isAdmin: req.user.isAdmin }, "blah", { expiresIn: "10m" }, (err, token) => {

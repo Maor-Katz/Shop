@@ -8,6 +8,7 @@ import './App.css';
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import Shop from './components/Shop';
 import Mycart from './components/Mycart';
+import Menucomp from './components/Menucomp';
 
 
 
@@ -21,7 +22,7 @@ function App() {
 
       <Router>
         <Switch>
-          <Route exact path="/login" component={() => <div className="loginPage"><Login /> <About /> <Storeinfo /></div>} />
+          <Route exact path="/login" component={() => <div className="loginPage"><Login /> <About /> <Storeinfo /><Menucomp /></div>} />
 
           <Route path="/register" component={() => <div className="loginPage"><Register /> <About /> <Storeinfo /></div>} />
 

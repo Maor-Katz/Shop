@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,7 +10,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from "react-redux";
-import { existingUser } from "../actions/actions";
+import { existingUser, chooseView } from "../actions/actions";
 import Container from '@material-ui/core/Container';
 import { withRouter } from 'react-router-dom';
 
@@ -49,10 +49,41 @@ const useStyles = makeStyles(theme => ({
 
 function Login(props) {
   const classes = useStyles();
+  const [screenStatus, setScreenStatus] = useState('')
+  const [menuBar, setMenuBar] = useState(false)
+
+  useEffect(() => {
+    
+    checkView()
+  },[]);
+
+  const checkView = () => {
+    const { dispatch } = props
+    // need to listen to resize event listener in order to choose the view
+    window.addEventListener('resize', () => {
+      if (window.innerWidth < 1200) {
+        dispatch(chooseView('ABOUT_PAGE', false))
+        dispatch(chooseView('INFO_PAGE', false))
+        dispatch(chooseView('MOBILE_MENU', true))
+        dispatch(chooseView('LOGIN_PAGE', true))
+      } else {
+        dispatch(chooseView('ABOUT_PAGE', true))
+        dispatch(chooseView('INFO_PAGE', true))
+        dispatch(chooseView('MOBILE_MENU', false))
+        dispatch(chooseView('LOGIN_PAGE', true))
+      }
+    });
+    //on the first upload of the page we must check the view:
+    if (window.innerWidth < 1200) {
+      dispatch(chooseView('ABOUT_PAGE', false))
+      dispatch(chooseView('INFO_PAGE', false))
+      dispatch(chooseView('MOBILE_MENU', true))
+    }
+  }
 
   async function login() {
     try {
-      const rawResponse = await fetch('http://localhost:1009/auth/login', {
+      const rawResponse = await fetch('http://localhost/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -75,9 +106,9 @@ function Login(props) {
   }
 
   const [errMsg, setErrMsg] = useState('');
-  const { userStatus } = props;
-  return (
-    <Container component="main" maxWidth="xs">
+  const { userStatus, view } = props;
+  return view.loginPage && <div className="loginWrapper">
+    <Container component="main" maxWidth="xs" className="flex1">
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -146,12 +177,13 @@ function Login(props) {
         <Copyright />
       </Box>
     </Container>
-  );
+  </div>
 }
 
 const mapStateToProps = state => ({
   existingUser: state.existingUser,
-  userStatus: state.userStatus
+  userStatus: state.userStatus,
+  view: state.view
 })
 
 export default connect(mapStateToProps)(withRouter(Login))

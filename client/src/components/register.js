@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -15,7 +15,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from "react-redux";
-import { newUser } from "../actions/actions";
+import { newUser, chooseView } from "../actions/actions";
 import { fieldsCounter } from "../service"
 
 function Copyright() {
@@ -65,6 +65,28 @@ const useStyles = makeStyles(theme => ({
 
 function Register(props) {
     const classes = useStyles();
+    useEffect(() => {
+        checkView()
+      }, []);
+    
+    const checkView = () => {
+        const { dispatch } = props
+        // need to listen to resize event listener in order to choose the view
+        window.addEventListener('resize', () => {
+          if (window.innerWidth < 1200) {
+            dispatch(chooseView('ABOUT_PAGE', false))
+            dispatch(chooseView('INFO_PAGE', false))
+          } else {
+            dispatch(chooseView('ABOUT_PAGE', true))
+            dispatch(chooseView('INFO_PAGE', true))
+          }
+        });
+        //on the first upload of the page we must check the view:
+        if (window.innerWidth < 1200) {
+            dispatch(chooseView('ABOUT_PAGE', false))
+            dispatch(chooseView('INFO_PAGE', false))
+        }
+      }
 
     function changeHandler(field, e) {
         const { dispatch } = props
@@ -72,7 +94,7 @@ function Register(props) {
     }
     async function checkUserExists() {// check if email or id already exists
         try {
-            const rawResponse = await fetch('http://localhost:1009/auth/check', {
+            const rawResponse = await fetch('/auth/check', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -110,7 +132,7 @@ function Register(props) {
     async function register() {
         const { newUser } = props;
         try {
-            const rawResponse = await fetch('http://localhost:1009/auth/register', {
+            const rawResponse = await fetch('/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -140,6 +162,7 @@ function Register(props) {
 
     return (
         <div className="registerPage">
+            
             <Grid container component="main" className={classes.root}>
                 <CssBaseline />
                 <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square className={classes.root}>
@@ -297,7 +320,8 @@ function Register(props) {
     );
 }
 const mapStateToProps = state => ({
-    newUser: state.newUser
+    newUser: state.newUser,
+    view: state.view
 })
 
 export default connect(mapStateToProps)(Register)

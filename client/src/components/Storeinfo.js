@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { setUserStatus } from '../actions/actions'
 var moment = require('moment');
 
-class About extends React.Component {
+class Storeinfo extends React.Component {
 
   state = {
     productsNum: 0,
@@ -16,14 +16,14 @@ class About extends React.Component {
 
   async componentDidMount() {
     const { dispatch } = this.props;
-    fetch('http://localhost:1009/products')
+    fetch('/products')
       .then((response) => {
         return response.json();
       })
       .then((data) => {
         this.setState({ productsNum: Object.values(data[0])[0] })
       });
-    fetch('http://localhost:1009/products/orders')
+    fetch('/products/orders')
       .then((response) => {
         return response.json();
       })
@@ -52,8 +52,8 @@ class About extends React.Component {
 
   render() {
     const { productsNum, ordersNum, lastUserOrder, name } = this.state;
-    const { userStatus } = this.props
-    return <div className="storeInfoPage">
+    const { userStatus, view } = this.props
+    return view.infoPage && <div className="storeInfoPage">
       <h1 className="storeInfoTitle">Store Information</h1>
       <div className="infoDetails">
         <div className="numOfProducts">Availble products of Megasport : {productsNum}</div>
@@ -76,7 +76,8 @@ class About extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  userStatus: state.userStatus
+  userStatus: state.userStatus,
+  view: state.view
 })
 
-export default connect(mapStateToProps)(withRouter(About))
+export default connect(mapStateToProps)(withRouter(Storeinfo))

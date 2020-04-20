@@ -42,6 +42,7 @@ class Shop extends React.Component {
         this.getAllProducts();
 
         let userArayDetails = await getUserDetailsAndCartId();
+        if (userArayDetails.length === 0) { return } //case we didnt success to get details about user
         await this.setState({ userDetails: userArayDetails[0], userCartId: userArayDetails[1], loader: false })
         if (userArayDetails[1] === 'no-open-cart') {
             this.openNewCart()
@@ -49,7 +50,7 @@ class Shop extends React.Component {
     }
 
     getAllProducts = async () => {
-        let response = await fetch(`http://localhost:1009/products/all`, {
+        let response = await fetch(`http://localhost/products/all`, {
             headers: {
                 'Content-Type': 'application/json',
                 token: localStorage.token
@@ -74,13 +75,13 @@ class Shop extends React.Component {
     }
 
     getProductsByCategory = async (categoryId) => {
-        let response = await fetch(`http://localhost:1009/products/bycategory/${categoryId}`);
+        let response = await fetch(`http://localhost/products/bycategory/${categoryId}`);
         let data = await response.json()
         this.setState({ productsToShow: data })
     }
 
     searchProduct = async () => {
-        let response = await fetch(`http://localhost:1009/products/search/${this.state.searchBox}`);
+        let response = await fetch(`http://localhost/products/search/${this.state.searchBox}`);
         let data = await response.json()
         this.setState({ productsToShow: data })
     }
@@ -88,12 +89,18 @@ class Shop extends React.Component {
     addCartItem = async () => {
         const { userCartId, itemForModal } = this.state
         try {
-            let response = await fetch(`http://localhost:1009/products/cartitem/add`, {
+            let response = await fetch(`http://localhost/products/cartitem/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ product_id: itemForModal.product_id, quantity: itemForModal.quantity, price: itemForModal.price, cart_id: userCartId })
+                body: JSON.stringify({
+                    product_id: itemForModal.product_id,
+                    quantity: itemForModal.quantity,
+                    price: itemForModal.price,
+                    sum_price: itemForModal.price * itemForModal.quantity,
+                    cart_id: userCartId
+                })
             });
             let data = await response.json()
             this.setState({
@@ -109,7 +116,7 @@ class Shop extends React.Component {
 
     openNewCart = async () => {
         const { userDetails } = this.state
-        let response = await fetch(`http://localhost:1009/products/newcart`, {
+        let response = await fetch(`/products/newcart`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -120,7 +127,7 @@ class Shop extends React.Component {
         let newCartId = await getNewCartId(userDetails.Identity_num);
         this.setState({ userCartId: newCartId })
     }
-    
+
     editProduct = (details) => {
         const { userDetails } = this.state
         if (!userDetails.isAdmin) { return }// case user is not admin, dont continute with this function
@@ -134,12 +141,11 @@ class Shop extends React.Component {
 
     render() {
         const { categories, productsToShow, modalIsOpen, itemForModal, userDetails, userCartId, loader } = this.state;
-        const { shoppingCart, dispatch, isAdmin } = this.props
-
-        return <div className="Shop">
+        const { shoppingCart, dispatch, isAdmin, view } = this.props
+        return <div className={`Shop ${shoppingCart && view.mobileMenu && 'displayNone'}`}>
             {loader && <Loader />}
             <div className="logoutWrapper">
-                <div className="hiLogo">Welcome {userDetails.firstname}!</div>
+                <div className="hiLogo">Hey {userDetails.firstname}!</div>
                 <a className="logoutBtn" onClick={() => localStorage.clear()} href="/login">Logout</a>
             </div>
             <img src="https://www.bls.gov/spotlight/2017/sports-and-exercise/images/cover_image.jpg" className="logo" alt="none" />
@@ -180,7 +186,7 @@ class Shop extends React.Component {
                     modalIsOpen: false,
                     itemForModal: { product: '', quantity: 1, img_src: '' }
                 })} />
-                <img src={`http://localhost:1009/uploads/${itemForModal.img_src}`} className="imgModal" alt="none" />
+                <img src={`https://maor-katz-new-bucket1990.s3.eu-west-2.amazonaws.com/${itemForModal.img_src}`} className="imgModal" alt="none" />
                 <div className="productModal">{itemForModal.product}</div>
                 <div className="qunatityDiv">
                     <FontAwesomeIcon icon={faMinus} className="qunatityBtn" onClick={() => { itemForModal.quantity--; this.setState({ itemForModal }) }} />
@@ -196,7 +202,8 @@ class Shop extends React.Component {
 }
 const mapStateToProps = state => ({
     shoppingCart: state.shoppingCart.shopping_cart,
-    isAdmin: state.isAdmin.isAdmin
+    isAdmin: state.isAdmin.isAdmin,
+    view: state.view
 })
 
 export default connect(mapStateToProps)(withRouter(Shop))

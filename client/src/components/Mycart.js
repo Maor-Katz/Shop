@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import UploadButtons from './matirialComponents/Uploadbtn'
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
-import { addProduct } from '../actions/actions'
+import { addProduct, chooseView, shoppingCartfunc } from '../actions/actions'
 import NativeSelects from './matirialComponents/Myselect'
 
 class Mycart extends React.Component {
@@ -35,6 +35,7 @@ class Mycart extends React.Component {
 
     async componentDidMount() {
         const { dispatch } = this.props
+        this.checkView()
         this.getUserProducts()
         this.getUserTotalPrice()
         let userDetails = await getUserDetailsAndCartId()
@@ -45,14 +46,31 @@ class Mycart extends React.Component {
             this.setState({ categories })
         }
     }
+
+    checkView = () => {
+        const { dispatch } = this.props
+        // need to listen to resize event listener in order to choose the view
+        window.addEventListener('resize', () => {
+            if (window.innerWidth < 1200) {
+                dispatch(chooseView('MOBILE_MENU', true))
+            } else {
+                dispatch(chooseView('MOBILE_MENU', false))
+            }
+        });
+        //on the first upload of the page we must check the view:
+        if (window.innerWidth < 1200) {
+            dispatch(chooseView('MOBILE_MENU', true))
+        }
+    }
+
     getUserTotalPrice = async () => {
-        let response = await fetch(`http://localhost:1009/products/sum/${localStorage.email}`);
+        let response = await fetch(`http://localhost/products/sum/${localStorage.email}`);
         let data = await response.json()
         this.setState({ totalPrice: Object.values(data[0])[0] || 0 })
     }
 
     getUserProducts = async () => {
-        let response = await fetch(`http://localhost:1009/products/productsbyid/${localStorage.email}`, {
+        let response = await fetch(`http://localhost/products/productsbyid/${localStorage.email}`, {
             headers: {
                 'Content-Type': 'application/json',
                 token: localStorage.token
@@ -66,7 +84,7 @@ class Mycart extends React.Component {
     }
 
     deleteProductItem = async (productId) => {
-        let response = await fetch(`http://localhost:1009/products/product/${productId}`, {
+        let response = await fetch(`http://localhost/products/product/${productId}`, {
             method: 'DELETE'
         });
         let data = await response.json();
@@ -86,7 +104,7 @@ class Mycart extends React.Component {
         if (!newProduct.files[0] && addNew) { return console.error('please add image to the product') }
         await this.uploadImg();
         try {
-            let response = await fetch(`http://localhost:1009/products/${addNew ? 'addproduct' : 'editproduct'}`, {
+            let response = await fetch(`http://localhost/products/${addNew ? 'addproduct' : 'editproduct'}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -114,7 +132,7 @@ class Mycart extends React.Component {
         }
 
         try {
-            let response = await fetch(`http://localhost:1009/products/uploadimg`, {
+            let response = await fetch(`http://localhost/products/uploadimg`, {
                 method: 'POST',
                 body: form
             });
@@ -142,15 +160,19 @@ class Mycart extends React.Component {
 
     render() {
         const { productsForCart, totalPrice, categories, addNewProdForm } = this.state;
-        const { shoppingCart, isAdmin, newProduct, dispatch } = this.props;
-        console.log(totalPrice)
-        return <div className={`myCartPanel ${shoppingCart || isAdmin ? 'flex1' : 'flex0'} ${this.props.atOrder ? 'cartAtOrder' : ''}`}>
+        const { shoppingCart, isAdmin, newProduct, dispatch, view } = this.props;
+        
+        return  <div className={`myCartPanel ${shoppingCart || isAdmin ? 'flex1' : 'flex0'} ${view.mobileMenu && window.location.pathname==='/order' && 'displayNone'} ${this.props.atOrder ? 'cartAtOrder' : ''}`}>
             {!isAdmin ? <div>
                 <h2 className="storeInfoTitle ">My Cart</h2>
                 {productsForCart.map((p, index) => (
                     <Mycartcard details={p} key={index} deleteProductItem={this.deleteProductItem} atOrder={this.props.atOrder ? true : false} />
                 ))}
                 <div className="totalPrice">Total price : {totalPrice} <FontAwesomeIcon icon={faShekelSign} className="size12" /></div>
+                {view.mobileMenu && <Button size="small" variant="contained" color="primary" className="marginBottom"
+                    onClick={() => dispatch(shoppingCartfunc('SHOPPING_CART', false))}>
+                    Back To Shop
+</Button>}
             </div> : <div className="adminPanel">
                     <div>
                         {addNewProdForm ? <h2 className="storeInfoTitle ">Add New Product</h2> : <h2 className="storeInfoTitle ">Edit</h2>}
@@ -208,7 +230,8 @@ const mapStateToProps = state => ({
     shoppingCart: state.shoppingCart.shopping_cart,
     isAdmin: state.isAdmin.isAdmin,
     newProduct: state.newProduct,
-    productId: state.editProduct
+    productId: state.editProduct,
+    view: state.view
 })
 
 export default connect(mapStateToProps)(withRouter(Mycart))

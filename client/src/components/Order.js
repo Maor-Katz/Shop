@@ -42,13 +42,17 @@ class Order extends React.Component {
     }
 
     getUserTotalPrice = async () => {
-        let response = await fetch(`http://localhost:1009/products/sum/${localStorage.email}`);
+        let response = await fetch(`/products/sum/${localStorage.email}`);
         let data = await response.json()
         this.setState({ totalPrice: Object.values(data[0])[0] })
     }
 
     getUserProducts = async () => {
-        let response = await fetch(`http://localhost:1009/products/productsbyid/${localStorage.email}`);
+        let response = await fetch(`/products/productsbyid/${localStorage.email}`, {
+            headers: {
+                token: localStorage.token
+            }
+        });
         let data = await response.json()
         this.setState({ productsForCart: data })
     }
@@ -68,7 +72,6 @@ class Order extends React.Component {
             p['newArr'] = p.product_name.replace(reg, '|' + myString[0] + '|').split('|')
             return reg.test(p.product_name);
         })
-
         this.setState({ listForSuggest: newListForSuggest })
     }
     updateForm = (e, field) => {
@@ -100,7 +103,7 @@ class Order extends React.Component {
         let monthTranslate = `0${month}`.slice(-2)// i.e: in order to get april 04 and not 4
         let day = form['date'].getDate();
         let dayTranslate = `0${day}`.slice(-2)// i.e: in order to get day 05 and not 5
-        let response = await fetch(`http://localhost:1009/products/ordersbydate/${year}-${monthTranslate}-${dayTranslate}`);
+        let response = await fetch(`/products/ordersbydate/${year}-${monthTranslate}-${dayTranslate}`);
         let data = await response.json()
         if (data.length > 2) { return false } else {
             return true
@@ -117,7 +120,7 @@ class Order extends React.Component {
                 return
             }
 
-            const rawResponse = await fetch(`http://localhost:1009/products/confirm/${userDetails.userDetails.Identity_num}`, {
+            const rawResponse = await fetch(`/products/confirm/${userDetails.userDetails.Identity_num}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -135,16 +138,16 @@ class Order extends React.Component {
     render() {
 
         const { errMsg, searchBox, listForSuggest, form, selectedDate, successMsg } = this.state
-
+        const { view } = this.props
         return <div className="orderPage">
             <h2 className="storeInfoTitle ">My Order</h2>
-            <div ><SearchBox handler={this.handler} /></div>
+            {!view.mobileMenu && <div><SearchBox handler={this.handler} /></div>}
             {searchBox && <div className='autosuggest'>{listForSuggest.map(p => (
                 <div>
                     <span>{p.newArr[0]}<span className="red">{p.newArr[1]}</span>{p.newArr[2]}</span>
                 </div>
             ))}</div>}
-            <Button variant="contained" color="primary" href="/shop"
+            <Button variant="contained" href="/shop"
 
                 className="backToShop">
                 Back To Shop
@@ -213,7 +216,8 @@ class Order extends React.Component {
     }
 }
 const mapStateToProps = state => ({
-    userDetails: state.userDetails
+    userDetails: state.userDetails,
+    view: state.view
 })
 
 export default connect(mapStateToProps)(withRouter(Order))

@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  position: relative;
 }
 
 .loginPage{
@@ -10,11 +11,22 @@
 .loginPanel{
   flex: 1;
 }
+.loginWrapper{
+  display: flex;
+}
+
+.menuIcon{
+  position: absolute;
+  top: 5px;
+  font-size: 18px;
+  right: 5px;
+  display: none;
+}
 
 .aboutPage{
   flex: 1;
   background-image: url(https://images.unsplash.com/photo-1582020086775-1c3fc831a1c7?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max);
-  
+  height: 100vh;
   background-size: cover;
 }
 
@@ -27,6 +39,7 @@
   background-repeat: no-repeat;
   background-position: center;
   flex: 1;
+  height: 100vh;
 }
 
 .infoDetails{
@@ -270,7 +283,7 @@ margin: 0 auto !important;
 .orderPage{
   flex:1;
   background-color: bisque;
-  height: 100vh;
+  /* height: 100vh; */
 }
 
 .autosuggest{
@@ -431,4 +444,116 @@ margin: 0 auto !important;
 .underline{
   text-decoration: underline;
   padding-right: 5px;
+}
+
+@media screen and (max-width: 1200px) {
+  .menuBar{
+    position: absolute;
+    right: 0px;
+    top:0px;
+    width: 0%;
+    border-radius: 10px;
+    display: flex;
+      flex-direction: column;
+      background-color: white;
+    }
+    
+    .loginPage{
+      display: inline-block;
+    }
+    .menuIcon{
+      display: inline-block;
+      z-index: 999;
+    }
+    .width80{
+      transition: 0.3s;
+      width: 80%;
+      border: black 1px solid;
+    }
+    .inlineBlock{
+      display: inline-block !important;
+    }
+    
+    .menuBtn{
+      width: 160px;
+      margin: 0 auto;
+      font-weight: bold;
+      display: none;
+    }
+
+    .lineMenu{
+      height: 1px;
+      margin: 0 auto;
+      width: 65%;
+      background-color: black;
+    }
+    .aboutTitle{
+      margin: 0;
+    }
+    .storeInfoPage{
+      width: 100vw;
+    }
+    .fontsize{
+      font-size: 20px !important;
+    }
+    .logo{
+      width: 45px;
+      height: 45px;
+    }
+    .specificCard{
+      width: 150px !important;
+    }
+    .logoutWrapper{
+      font-size: 12px;
+    }
+    .payWrapperBtn{
+      top: 28%;
+    }
+    .payBtn{
+      width: 100px;
+    }
+    .openCartBtn{
+      margin-top: 75px;
+      height: 70px;
+      width: 70px;
+    }
+    .fa-shopping-cart {
+      font-size: 15px;
+      margin-left: 39px;
+    }
+    .fa-arrow-right{
+      font-size: 15px;
+    }
+    .glassField{
+      width: 300px !important;
+    }
+    .displayNone{
+      display: none ;
+    }
+    .payWrapperBtn{
+     position: static;
+     margin-top: 10px;
+     display: inline-block;
+    }
+    .backToShop{
+      margin-top: 20px !important;
+      position: static !important;
+    }
+    .confirmBtn{
+      margin-bottom: 20px !important;
+    }
+    .marginBottom{
+      margin-bottom: 15px !important;
+    }
+    .tooltiptext{
+      font-size: 12px;
+      right: 18px !important;
+      top: -8px !important;
+    }
+    .black:after{
+      top: 35px;
+    }
+    .loadGif{
+      width: 100px;
+    }
 }

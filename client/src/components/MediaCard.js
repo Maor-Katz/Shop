@@ -25,11 +25,11 @@ const useStyles = makeStyles({
 export default function MediaCard(props) {
   const classes = useStyles();
   return (
-    <Card className={classes.root} >
+    <Card className={`${classes.root} specificCard`} >
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image={`http://localhost:1009/uploads/${props.details.img_url}`}
+          image={`https://maor-katz-new-bucket1990.s3.eu-west-2.amazonaws.com/${props.details.img_url}`}
           title="Contemplative Reptile"
           onClick={()=> props.editProduct(props.details)}
         />
