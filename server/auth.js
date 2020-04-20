@@ -3,12 +3,12 @@ const router = express.Router();
 const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+//needs db credetntials
 const connection = mysql.createConnection({
-    host: 'qbhol6k6vexd5qjs.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
-    user: 'jtctj841reqed4pa',
-    password: 'mp7wqnw4limu2z5o',
-    database: 'smwqc0rzzgmbwwzm'
+    host: '',
+    user: '',
+    password: '',
+    database: ''
 });
 
 connection.connect((err) => {
