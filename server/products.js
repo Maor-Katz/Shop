@@ -20,10 +20,10 @@ app.use(bodyParser.json())
 const pdfTemplate = require('./public/mytemplate')
 
 const connection = mysql.createConnection({
-    host: 'qbhol6k6vexd5qjs.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
-    user: 'jtctj841reqed4pa',
-    password: 'mp7wqnw4limu2z5o',
-    database: 'smwqc0rzzgmbwwzm'
+    host: '',
+    user: '',
+    password: '',
+    database: ''
 });
 
 connection.connect((err) => {
