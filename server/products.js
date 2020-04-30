@@ -18,12 +18,12 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
 const pdfTemplate = require('./public/mytemplate')
-//needs my credentials
+
 const connection = mysql.createConnection({
-    host: '',
-    user: '',
-    password: '',
-    database: ''
+    host: 'qbhol6k6vexd5qjs.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+    user: 'jtctj841reqed4pa',
+    password: 'mp7wqnw4limu2z5o',
+    database: 'smwqc0rzzgmbwwzm'
 });
 
 connection.connect((err) => {
@@ -287,14 +287,13 @@ router.post('/download/:cartid', (req, res) => {
         // res.json(results);
         connection.query(q1, (err, resultsSum) => {
             if (err) throw err;
-            pdf.create(pdfTemplate(resultsSum, results, req.body), {}).toFile('./public/result.pdf', (err) => {
+            pdf.create(pdfTemplate(resultsSum, results, req.body), {}).toFile(path.join(__dirname, 'tmp', 'result.pdf'), (err) => {
                 if (err) {
                     return Promise.reject()
                 }
                 return Promise.resolve()
             })
 
-            // res.sendFile("/result.pdf")
             res.json(results)
         });
 
@@ -303,28 +302,8 @@ router.post('/download/:cartid', (req, res) => {
 })
 //save pdf file
 router.get('/invoice', (req, res) => {
-    res.download(__dirname + "/public/result.pdf")
+    res.download(path.join(__dirname, 'tmp', 'result.pdf'))
 })
-
-//this function returns true or false
-async function checkCreateUploadsFolder(uploadsFolder) {
-    try {
-        await fs.statAsync(uploadsFolder)
-    } catch (e) {
-        if (e && e.code == ' ENOENT') {
-            try {
-                fs.mkdirAsync(uploadsFolder)
-            } catch (err) {
-                console.error('error creating uploads folder')
-                return false
-            }
-        } else {
-            console.log('error reading uploads folder')
-            return false;
-        }
-    }
-    return true;
-}
 
 //return true or false in case it was successfull
 function checkFileType(file) {
@@ -337,55 +316,24 @@ function checkFileType(file) {
     return true;
 }
 
-const s3 = new aws.S3({
-    accessKeyId: 'AKIASDV2U6NJMZQRJD64',
-    secretAccessKey: 'OsUe0eq0qnYtxF+e7yt0P4nSIXkp+w3LaGyhpqn',
-    bucket: 'maor-katz-new-bucket1990'
-})
-const profileImgUpload = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: 'onclick',
-        acl: 'public-read',
-        key: function (req, file, cb) {
-            cb(null, path.basename(file.originalname, path.extname(file.originalname)) + '-' + Date.now() + path.extname(file.originalname))
-        }
-    }),
-    limits: {fileSize: 20000000}, // In bytes: 2000000 bytes = 2 MB
-    fileFilter: function (req, file, cb) {
-        checkFileType(file, cb);
-    }
-}).single('profileImage');
-
-function checkFileType(file, cb) {
-    // Allowed ext
-    const filetypes = /jpeg|jpg|png|gif/;
-    // Check ext
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    // Check mime
-    const mimetype = filetypes.test(file.mimetype);
-    if (mimetype && extname) {
-        return cb(null, true);
-    } else {
-        cb('Error: Images Only!');
-    }
-}
-//need aws s3 credetials
 //upload image to server
 router.post('/uploadimg', async (req, res) => {
     const s3 = new aws.S3({
-        accessKeyId: '',
-        secretAccessKey: '',
-        bucket: ''
+        accessKeyId: 'AKIASDV2U6NJMZQRJD64',
+        secretAccessKey: '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',
+        bucket: 'maor-katz-new-bucket1990'
     })
 
     const form = new formidable.IncomingForm()
     await form.parse(req, function (err, fields, files) {
         console.log(files.abc.path, 'filessman')
-        console.log(files.abc)
-        console.log("hi")
-        const fileContent = fs.readFileSync(`tmp/${files.name}`);
-
+        // const fileContent = fs.readFileSync(`${__dirname}\${files.name}`);
+        var oldpath = files.abc.path;
+        var newpath = path.join('tmp');
+        fs.rename(oldpath, newpath, function (err) {
+            if (err) throw err;
+        });
+        const fileContent = fs.readFileSync(path.join('tmp'));
         console.log(fileContent, "filecontent duede")
         const params = {
             Bucket: 'maor-katz-new-bucket1990',
@@ -400,32 +348,6 @@ router.post('/uploadimg', async (req, res) => {
         });
         console.log(fileContent, 'ahaha done');
     })
-// });
-
-// form.on('file', (name, file) => {
-    // file.path = path.join(__dirname + '/public/uploads/' + file.name)
-
-    // const fileContent = fs.readFileSync(file.path);
-
-// Setting up S3 upload parameters
-//         const params = {
-//             Bucket: 'maor-katz-new-bucket1990',
-//             Key: file.name, // File name you want to save as in S3
-//             Body: fileContent
-//         };
-
-// Uploading files to the bucket
-//         s3.upload(params, function (err, data) {
-//             if (err) {
-//                 throw err;
-//             }
-//             console.log(`File uploaded successfully. ${data.Location}`);
-//         });
-//         console.log(file.path);
-//     })
-    // form.on('file', (name, file) => {
-    //     console.log('uploaded file ' + file.name)
-    // })
     res.json({ok: true, msg: 'image uploaded'})
 });
 
